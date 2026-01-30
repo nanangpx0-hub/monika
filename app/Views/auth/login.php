@@ -1,15 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $title ?? 'Login' ?> | MONIKA</title>
-    
+
     <!-- Custom Modern Auth Styles -->
     <link rel="stylesheet" href="<?= base_url('assets/css/auth-modern.css') ?>">
     <!-- Font Awesome (for Icons) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+
 <body>
 
     <!-- Animated Background Shapes -->
@@ -44,13 +46,8 @@
                 <div class="form-group">
                     <label for="login_id" class="form-label">Email or Username</label>
                     <div class="input-wrapper">
-                        <input type="text" 
-                               name="login_id" 
-                               id="login_id" 
-                               class="form-control" 
-                               placeholder="Enter your email or username" 
-                               required 
-                               autofocus>
+                        <input type="text" name="login_id" id="login_id" class="form-control"
+                            placeholder="Enter your email or username" required autofocus>
                         <i class="fas fa-envelope input-icon"></i>
                     </div>
                 </div>
@@ -58,12 +55,8 @@
                 <div class="form-group">
                     <label for="password" class="form-label">Password</label>
                     <div class="input-wrapper">
-                        <input type="password" 
-                               name="password" 
-                               id="password" 
-                               class="form-control" 
-                               placeholder="Enter your password" 
-                               required>
+                        <input type="password" name="password" id="password" class="form-control"
+                            placeholder="Enter your password" required>
                         <i class="fas fa-lock input-icon"></i>
                         <button type="button" class="password-toggle" id="togglePassword">
                             <i class="fas fa-eye"></i>
@@ -88,23 +81,23 @@
             </form>
 
             <div class="auth-footer">
-                <p>New partner? <a href="<?= base_url('register') ?>">Register Membership (Mitra)</a></p>
-                <p style="margin-top: 0.5rem; font-size: 0.75rem; opacity: 0.6;">&copy; <?= date('Y') ?> BPS Kabupaten Jember</p>
+                <p style="margin-top: 0.5rem; font-size: 0.75rem; opacity: 0.6;">&copy; <?= date('Y') ?> BPS Kabupaten
+                    Jember</p>
             </div>
         </div>
     </div>
 
     <!-- Scripts -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Password Toggle
             const togglePassword = document.querySelector('#togglePassword');
             const password = document.querySelector('#password');
-            
+
             togglePassword.addEventListener('click', function (e) {
                 const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
                 password.setAttribute('type', type);
-                
+
                 // Toggle eye icon
                 this.querySelector('i').classList.toggle('fa-eye');
                 this.querySelector('i').classList.toggle('fa-eye-slash');
@@ -114,13 +107,14 @@
             const loginForm = document.getElementById('loginForm');
             const submitBtn = document.getElementById('submitBtn');
             const btnIcon = submitBtn.querySelector('.btn-icon');
-            
-            loginForm.addEventListener('submit', function() {
+
+            loginForm.addEventListener('submit', function () {
                 submitBtn.classList.add('btn-loading');
                 submitBtn.setAttribute('disabled', 'disabled');
-                if(btnIcon) btnIcon.style.display = 'none';
+                if (btnIcon) btnIcon.style.display = 'none';
             });
         });
     </script>
 </body>
+
 </html>

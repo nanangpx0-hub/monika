@@ -8,8 +8,8 @@ use CodeIgniter\Router\RouteCollection;
 // Auth Routes
 $routes->get('/login', 'Auth::login');
 $routes->post('/login', 'Auth::loginProcess');
-$routes->get('/register', 'Auth::register');
-$routes->post('/register', 'Auth::registerProcess');
+$routes->get('/register', 'Auth::register', ['filter' => 'auth']);
+$routes->post('/register', 'Auth::registerProcess', ['filter' => 'auth']);
 $routes->get('/logout', 'Auth::logout');
 
 // Redirect root to login if not authenticated
