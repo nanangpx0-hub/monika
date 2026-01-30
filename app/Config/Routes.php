@@ -49,3 +49,28 @@ $routes->group('laporan', ['filter' => 'auth'], function ($routes) {
 // Monitoring Routes
 $routes->get('/monitoring', 'Monitoring::index', ['filter' => 'auth']);
 
+// API Routes
+$routes->group('api', ['namespace' => 'App\Controllers\Api'], function ($routes) {
+    $routes->post('auth/login', 'Auth::login');
+    $routes->group('users', ['filter' => 'jwt'], function ($routes) {
+        $routes->get('/', 'Users::index');
+        $routes->get('(:num)', 'Users::show/$1');
+        $routes->post('/', 'Users::create');
+        $routes->put('(:num)', 'Users::update/$1');
+        $routes->delete('(:num)', 'Users::delete/$1');
+    });
+});
+
+// Admin Routes
+$routes->group('admin', ['namespace' => 'App\Controllers\Admin', 'filter' => ['auth', 'admin']], function ($routes) {
+    $routes->get('users', 'Users::index');
+    $routes->get('users/create', 'Users::create');
+    $routes->post('users/store', 'Users::store');
+    $routes->get('users/edit/(:num)', 'Users::edit/$1');
+    $routes->post('users/update/(:num)', 'Users::update/$1');
+    $routes->delete('users/delete/(:num)', 'Users::delete/$1');
+
+    // Audit Report
+    $routes->get('audit', 'Audit::index');
+});
+

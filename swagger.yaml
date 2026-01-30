@@ -1,0 +1,127 @@
+openapi: 3.0.0
+info:
+  title: MONIKA API
+  description: API for Monitoring Nilai Kinerja & Anomali System
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080/api
+    description: Local Development Server
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - bearerAuth: []
+
+paths:
+  /auth/login:
+    post:
+      summary: User Login
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                  token:
+                    type: string
+                  user:
+                    type: object
+
+  /users:
+    get:
+      summary: Get list of users
+      parameters:
+        - in: query
+          name: search
+          schema:
+            type: string
+          description: Search term (name, username, email)
+        - in: query
+          name: role
+          schema:
+            type: integer
+          description: Filter by role ID
+      responses:
+        '200':
+          description: List of users
+    post:
+      summary: Create new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '201':
+          description: User created
+
+  /users/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+    get:
+      summary: Get user details
+      responses:
+        '200':
+          description: User details
+    put:
+      summary: Update user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: User updated
+    delete:
+      summary: Delete user
+      responses:
+        '200':
+          description: User deleted
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        fullname:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        id_role:
+          type: integer
+        nik_ktp:
+          type: string
+        sobat_id:
+          type: string

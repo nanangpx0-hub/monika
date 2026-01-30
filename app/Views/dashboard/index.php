@@ -1,9 +1,105 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title><?= $title ?? 'Dashboard' ?></title>
+<?= $this->extend('layout/dashboard') ?>
+
+<?= $this->section('header_actions') ?>
+    <form method="get" action="">
+        <div class="form-group row float-sm-right">
+            <div class="col-auto">
+                <select name="kegiatan" class="form-control" onchange="this.form.submit()">
+                    <option value="">-- Semua Kegiatan --</option>
+                    <?php foreach($list_kegiatan as $k): ?>
+                        <option value="<?= $k['id_kegiatan'] ?>" <?= ($selected_kegiatan == $k['id_kegiatan']) ? 'selected' : '' ?>>
+                            <?= $k['nama_kegiatan'] ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+        </div>
+    </form>
+<?= $this->endSection() ?>
+
+<?= $this->section('content') ?>
+    <!-- Small boxes (Stat box) -->
+    <div class="row">
+      <div class="col-lg-4 col-6">
+        <div class="small-box bg-info">
+          <div class="inner">
+            <h3><?= $stat_total ?></h3>
+            <p>Total Dokumen Masuk</p>
+          </div>
+          <div class="icon">
+            <i class="fas fa-file"></i>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4 col-6">
+        <div class="small-box bg-success">
+          <div class="inner">
+            <h3><?= $stat_entry ?></h3>
+            <p>Sudah Entry</p>
+          </div>
+          <div class="icon">
+            <i class="fas fa-check-circle"></i>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4 col-6">
+        <div class="small-box bg-danger">
+          <div class="inner">
+            <h3><?= $stat_error ?></h3>
+            <p>Dokumen Error / Anomali</p>
+          </div>
+          <div class="icon">
+            <i class="fas fa-exclamation-triangle"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-6">
+        <div class="card card-danger card-outline">
+          <div class="card-header">
+            <h5 class="card-title m-0">Top 5 Petugas Error Terbanyak</h5>
+          </div>
+          <div class="card-body p-0">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Nama PCL</th>
+                        <th>Jumlah Error</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if(empty($ranking)): ?>
+                        <tr><td colspan="3" class="text-center">Belum ada data error.</td></tr>
+                    <?php else: ?>
+                        <?php foreach($ranking as $i => $r): ?>
+                        <tr>
+                            <td><?= $i + 1 ?></td>
+                            <td><?= $r['fullname'] ?></td>
+                            <td><span class="badge badge-danger"><?= $r['error_count'] ?></span></td>
+                        </tr>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-lg-6">
+         <div class="card card-primary card-outline">
+            <div class="card-header">
+                <h5 class="card-title m-0">Informasi</h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">Selamat datang di sistem <strong>MONIKA</strong>. Gunakan filter di pojok kanan atas untuk melihat statistik spesifik per Kegiatan Survei.</p>
+            </div>
+         </div>
+      </div>
+    </div>
+<?= $this->endSection() ?>
 
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
