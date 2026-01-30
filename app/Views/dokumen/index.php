@@ -145,13 +145,14 @@
               </div>
             </div>
             <div class="card-body">
-              <table id="table-dokumen" class="table table-bordered table-striped">
+                <table id="table-dokumen" class="table table-bordered table-striped">
                 <thead>
                   <tr>
                     <th>ID</th>
                     <th>Kegiatan</th>
                     <th>Wilayah</th>
                     <th>PCL</th>
+                    <th>PML</th>
                     <th>Tgl Setor</th>
                     <th>Status</th>
                     <th>Aksi</th>
@@ -163,12 +164,13 @@
                       <td><?= $d['id_dokumen'] ?></td>
                       <td><?= $d['nama_kegiatan'] ?></td>
                       <td><?= $d['kode_wilayah'] ?></td>
-                      <td><?= $d['nama_pcl'] ?></td>
+                      <td><?= esc($d['nama_pcl'] ?? '-') ?></td>
+                      <td><?= esc($d['nama_pml'] ?? '-') ?></td>
                       <td><?= $d['tanggal_setor'] ?></td>
                       <td>
                         <?php
                         $badge = 'secondary';
-                        if ($d['status'] == 'Uploaded')
+                        if ($d['status'] == 'Setor')
                           $badge = 'info';
                         if ($d['status'] == 'Sudah Entry')
                           $badge = 'primary';
@@ -177,22 +179,71 @@
                         if ($d['status'] == 'Valid')
                           $badge = 'success';
                         ?>
+                        <?php if (!empty($d['status'])): ?>
                         <span class="badge badge-<?= $badge ?>"><?= $d['status'] ?></span>
+                        <?php endif; ?>
                       </td>
                       <td>
-                        <?php if (in_array($role_id, [1, 4]) && $d['status'] == 'Uploaded'): // Admin & Pengolahan ?>
-                          <form action="/dokumen/mark-entry/<?= $d['id_dokumen'] ?>" method="post" style="display:inline;">
+                        <?php if (in_array($role_id, [1, 4])): // Admin & Pengolahan ?>
+                          <?php if ($d['status'] == 'Setor'): ?>
+                            <form action="/dokumen/mark-entry/<?= $d['id_dokumen'] ?>" method="post" style="display:inline;">
+                              <?= csrf_field() ?>
+                              <button type="submit" class="btn btn-primary btn-xs"
+                                onclick="return confirm('Tandai sudah entry?')">
+                                <i class="fas fa-check"></i> Entry
+                              </button>
+                            </form>
+
+                            <form action="/dokumen/mark-clean/<?= $d['id_dokumen'] ?>" method="post" style="display:inline;">
+                              <?= csrf_field() ?>
+                              <button type="submit" class="btn btn-success btn-xs"
+                                onclick="return confirm('Tandai clean/valid?')">
+                                <i class="fas fa-broom"></i> Clean
+                              </button>
+                            </form>
+
+                            <button type="button" class="btn btn-danger btn-xs btn-error" data-id="<?= $d['id_dokumen'] ?>"
+                              data-toggle="modal" data-target="#modal-error">
+                              <i class="fas fa-exclamation-triangle"></i> Error
+                            </button>
+                          <?php elseif ($d['status'] == 'Error'): ?>
+                            <!-- Action Buttons for Error Status -->
+                            <a href="/dokumen/edit/<?= $d['id_dokumen'] ?>" class="btn btn-warning btn-xs" title="Perbaiki Data">
+                              <i class="fas fa-edit"></i> Fix
+                            </a>
+
+                            <form action="/dokumen/mark-clean/<?= $d['id_dokumen'] ?>" method="post" style="display:inline;">
+                              <?= csrf_field() ?>
+                              <button type="submit" class="btn btn-success btn-xs"
+                                onclick="return confirm('Data sudah diperbaiki secara manual? Tandai Valid.')" title="Tandai Valid">
+                                <i class="fas fa-check-circle"></i> Resolve
+                              </button>
+                            </form>
+                          <?php elseif ($d['status'] == 'Valid' || $d['status'] == 'Sudah Entry'): ?>
+                             <a href="/dokumen/edit/<?= $d['id_dokumen'] ?>" class="btn btn-warning btn-xs" title="Edit Data">
+                              <i class="fas fa-edit"></i> Edit
+                            </a>
+                          <?php endif; ?>
+                        <?php endif; ?>
+
+                        <?php if ($role_id == 1): // Admin always has Edit, Reset & Delete ?>
+                          <a href="<?= base_url('dokumen/edit/' . $d['id_dokumen']) ?>" class="btn btn-info btn-xs" title="Edit">
+                            <i class="fas fa-edit"></i>
+                          </a>
+                          <?php if (!empty($d['status'])): ?>
+                          <form action="<?= base_url('dokumen/reset-status/' . $d['id_dokumen']) ?>" method="post" style="display:inline;">
                             <?= csrf_field() ?>
-                            <button type="submit" class="btn btn-primary btn-xs"
-                              onclick="return confirm('Tandai sudah entry?')">
-                              <i class="fas fa-check"></i> Entry
+                            <button type="submit" class="btn btn-secondary btn-xs" onclick="return confirm('Reset status dokumen menjadi kosong?')" title="Reset Status ke Blank">
+                              <i class="fas fa-undo"></i>
                             </button>
                           </form>
-
-                          <button type="button" class="btn btn-danger btn-xs btn-error" data-id="<?= $d['id_dokumen'] ?>"
-                            data-toggle="modal" data-target="#modal-error">
-                            <i class="fas fa-exclamation-triangle"></i> Error
-                          </button>
+                          <?php endif; ?>
+                          <form action="<?= base_url('dokumen/delete/' . $d['id_dokumen']) ?>" method="post" style="display:inline;">
+                            <?= csrf_field() ?>
+                            <button type="submit" class="btn btn-danger btn-xs" onclick="return confirm('Hapus dokumen ini?')" title="Hapus">
+                              <i class="fas fa-trash"></i>
+                            </button>
+                          </form>
                         <?php endif; ?>
                       </td>
                     </tr>

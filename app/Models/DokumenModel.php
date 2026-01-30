@@ -24,7 +24,7 @@ class DokumenModel extends Model
     // Validation
     protected $validationRules      = [
         'id_kegiatan' => 'required|integer',
-        'kode_wilayah' => 'required|min_length(3)|max_length(20)',
+        'kode_wilayah' => 'required|min_length[3]|max_length[20]',
         'id_petugas_pendataan' => 'required|integer',
         'tanggal_setor' => 'required|valid_date'
     ];
@@ -35,13 +35,16 @@ class DokumenModel extends Model
     public function getDokumenWithRelations($role_id, $user_id)
     {
         $builder = $this->db->table('dokumen_survei');
-        $builder->select('dokumen_survei.*, master_kegiatan.nama_kegiatan, u_pcl.fullname as nama_pcl, u_proc.fullname as nama_pengolah');
+        $builder->select('dokumen_survei.*, master_kegiatan.nama_kegiatan, u_pcl.fullname as nama_pcl, u_pcl.id_supervisor, u_pml.fullname as nama_pml, u_proc.fullname as nama_pengolah');
         $builder->join('master_kegiatan', 'master_kegiatan.id_kegiatan = dokumen_survei.id_kegiatan');
         $builder->join('users as u_pcl', 'u_pcl.id_user = dokumen_survei.id_petugas_pendataan', 'left');
+        $builder->join('users as u_pml', 'u_pml.id_user = u_pcl.id_supervisor', 'left');
         $builder->join('users as u_proc', 'u_proc.id_user = dokumen_survei.processed_by', 'left');
 
         if ($role_id == 3) { // PCL only sees their own
             $builder->where('dokumen_survei.id_petugas_pendataan', $user_id);
+        } elseif ($role_id == 5) { // PML only sees documents from PCLs they supervise
+            $builder->where('u_pcl.id_supervisor', $user_id);
         }
 
         $builder->orderBy('dokumen_survei.created_at', 'DESC');

@@ -22,7 +22,7 @@ class AnomaliModel extends Model
 
     protected $validationRules      = [
         'id_dokumen' => 'required|integer',
-        'jenis_error' => 'required|max_length(100)',
+        'jenis_error' => 'required|max_length[100]',
         'keterangan' => 'required'
     ];
 }

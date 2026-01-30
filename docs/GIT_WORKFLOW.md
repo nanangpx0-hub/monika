@@ -11,7 +11,8 @@ Dokumentasi ini menjelaskan workflow Git, konvensi commit, dan best practices un
 5. [Pulling & Pushing](#pulling--pushing)
 6. [Merge & Pull Requests](#merge--pull-requests)
 7. [Common Commands](#common-commands)
-8. [Troubleshooting](#troubleshooting)
+8. [Automated Documentation Sync](#automated-documentation-sync)
+9. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -470,6 +471,28 @@ git blame app/Models/UserModel.php
 git bisect start
 git bisect bad  # current version
 git bisect good v1.0  # known good version
+```
+
+---
+
+## Automated Documentation Sync
+
+Untuk mempermudah sinkronisasi dokumentasi teknis (`.md`) ke repository, kami menyediakan tools otomatis.
+
+### Fitur
+- **Auto-Sync**: Otomatis mendeteksi perubahan file markdown dan melakukan push.
+- **Dedicated Script**: Menggunakan PowerShell script yang terisolasi dari workflow development utama.
+
+### Cara Penggunaan
+Lihat panduan lengkap di [GITHUB_INTEGRATION.md](GITHUB_INTEGRATION.md).
+
+Quick start:
+```powershell
+# Sync manual sekali jalan
+./scripts/sync_docs.ps1 -Sync
+
+# Mode monitoring terus-menerus
+./scripts/sync_docs.ps1 -Watch
 ```
 
 ---

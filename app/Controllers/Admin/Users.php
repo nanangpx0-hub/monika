@@ -42,13 +42,13 @@ class Users extends BaseController
     public function store()
     {
         $rules = [
-            'fullname' => 'required|min_length(3)|max_length(100)',
-            'username' => 'required|min_length(3)|max_length(50)|is_unique[users.username]',
+            'fullname' => 'required|min_length[3]|max_length[100]',
+            'username' => 'required|min_length[3]|max_length[50]|is_unique[users.username]',
             'email' => 'required|valid_email|is_unique[users.email]',
-            'password' => 'required|min_length(6)',
+            'password' => 'required|min_length[6]',
             'confpassword' => 'required|matches[password]',
             'id_role' => 'required|integer',
-            'nik_ktp' => 'permit_empty|numeric|min_length(16)|max_length(16)'
+            'nik_ktp' => 'permit_empty|numeric|min_length[16]|max_length[16]'
         ];
 
         if (!$this->validate($rules)) {
@@ -65,6 +65,7 @@ class Users extends BaseController
             'id_role' => $this->request->getVar('id_role'),
             'nik_ktp' => $this->request->getVar('nik_ktp'),
             'sobat_id' => $this->request->getVar('sobat_id'),
+            'phone_number' => $this->request->getVar('phone_number'),
             'is_active' => 1
         ];
 
@@ -108,8 +109,8 @@ class Users extends BaseController
         }
 
         $rules = [
-            'fullname' => 'required|min_length(3)|max_length(100)',
-            'username' => "required|min_length(3)|max_length(50)|is_unique[users.username,id_user,{$id}]",
+            'fullname' => 'required|min_length[3]|max_length[100]',
+            'username' => "required|min_length[3]|max_length[50]|is_unique[users.username,id_user,{$id}]",
             'email' => "required|valid_email|is_unique[users.email,id_user,{$id}]",
             'id_role' => 'required|integer'
         ];
@@ -117,7 +118,7 @@ class Users extends BaseController
         // Password validation only if filled
         $password = $this->request->getVar('password');
         if (!empty($password)) {
-            $rules['password'] = 'min_length(6)';
+            $rules['password'] = 'min_length[6]';
             $rules['confpassword'] = 'matches[password]';
         }
 
@@ -133,6 +134,7 @@ class Users extends BaseController
             'id_role' => $this->request->getVar('id_role'),
             'nik_ktp' => $this->request->getVar('nik_ktp'),
             'sobat_id' => $this->request->getVar('sobat_id'),
+            'phone_number' => $this->request->getVar('phone_number'),
             'is_active' => $this->request->getVar('is_active') ? 1 : 0
         ];
 
@@ -156,7 +158,8 @@ class Users extends BaseController
         $userModel = new UserModel();
         $user = $userModel->find($id); // Get user data before delete for log
 
-        if ($userModel->delete($id)) {
+        // Soft delete instead of hard delete
+        if ($userModel->save(['id_user' => $id, 'is_active' => 0, 'deleted_at' => date('Y-m-d H:i:s')])) {
             // Audit Log
             $audit = new \App\Models\AuditModel();
             $audit->log('User Deleted', "User $id ({$user['username']}) deleted by Admin.", session()->get('id_user'));
@@ -165,4 +168,106 @@ class Users extends BaseController
         }
         return redirect()->to('admin/users')->with('error', 'Gagal menghapus user.');
     }
+
+    public function resetPasswordForm($id)
+    {
+        $userModel = new UserModel();
+        $user = $userModel->find($id);
+
+        if (!$user) {
+            return redirect()->to('admin/users')->with('error', 'User tidak ditemukan.');
+        }
+
+        $data = [
+            'title' => 'Reset Password',
+            'user' => $user
+        ];
+
+        return view('admin/users/reset_password', $data);
+    }
+
+    public function resetPassword($id)
+    {
+        $userModel = new UserModel();
+        $user = $userModel->find($id);
+
+        if (!$user) {
+            return redirect()->to('admin/users')->with('error', 'User tidak ditemukan.');
+        }
+
+        $newPassword = $this->request->getVar('new_password');
+        $generateRandom = $this->request->getVar('generate_random');
+
+        if ($generateRandom) {
+            $newPassword = $this->generatePassword();
+        }
+
+        if (empty($newPassword) || strlen($newPassword) < 6) {
+            return redirect()->back()->with('error', 'Password minimal 6 karakter.');
+        }
+
+        // Update password
+        $hashedPassword = password_hash($newPassword, PASSWORD_BCRYPT);
+        $db = \Config\Database::connect();
+        $db->table('users')->where('id_user', $id)->update([
+            'password' => $hashedPassword,
+            'password_changed_at' => date('Y-m-d H:i:s')
+        ]);
+
+        // Audit Log
+        $audit = new \App\Models\AuditModel();
+        $audit->log('Password Reset', "Password for user $id ({$user['username']}) reset by Admin.", session()->get('id_user'));
+
+        if ($generateRandom) {
+            return redirect()->to('admin/users')->with('success', "Password berhasil direset. Password baru: $newPassword");
+        }
+
+        return redirect()->to('admin/users')->with('success', 'Password berhasil direset.');
+    }
+
+    public function toggleStatus($id)
+    {
+        $userModel = new UserModel();
+        $user = $userModel->find($id);
+
+        if (!$user) {
+            return redirect()->to('admin/users')->with('error', 'User tidak ditemukan.');
+        }
+
+        $newStatus = $user['is_active'] ? 0 : 1;
+        $statusLabel = $newStatus ? 'diaktifkan' : 'dinonaktifkan';
+
+        $userModel->save(['id_user' => $id, 'is_active' => $newStatus]);
+
+        // Audit Log
+        $audit = new \App\Models\AuditModel();
+        $audit->log('User Status Changed', "User $id ({$user['username']}) $statusLabel.", session()->get('id_user'));
+
+        return redirect()->to('admin/users')->with('success', "User berhasil $statusLabel.");
+    }
+
+    /**
+     * Generate a random secure password
+     */
+    protected function generatePassword(int $length = 10): string
+    {
+        $uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $lowercase = 'abcdefghijklmnopqrstuvwxyz';
+        $numbers = '0123456789';
+        $special = '!@#$%&*';
+        
+        $password = '';
+        $password .= $uppercase[random_int(0, strlen($uppercase) - 1)];
+        $password .= $lowercase[random_int(0, strlen($lowercase) - 1)];
+        $password .= $numbers[random_int(0, strlen($numbers) - 1)];
+        $password .= $special[random_int(0, strlen($special) - 1)];
+        
+        $allChars = $uppercase . $lowercase . $numbers . $special;
+        for ($i = 4; $i < $length; $i++) {
+            $password .= $allChars[random_int(0, strlen($allChars) - 1)];
+        }
+        
+        return str_shuffle($password);
+    }
 }
+

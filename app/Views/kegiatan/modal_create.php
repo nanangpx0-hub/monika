@@ -12,11 +12,12 @@
                     <?= csrf_field() ?>
                     <div class="form-group">
                         <label>Nama Kegiatan</label>
-                        <input type="text" name="nama_kegiatan" class="form-control" placeholder="Contoh: Sakernas Februari 2026" required>
+                        <input type="text" name="nama_kegiatan" id="nama_kegiatan" class="form-control" placeholder="Contoh: Sakernas Februari 2026" required>
                     </div>
                     <div class="form-group">
-                        <label>Kode Kegiatan (Unik)</label>
-                        <input type="text" name="kode_kegiatan" class="form-control" placeholder="Contoh: SAK26FEB" required>
+                        <label>Kode Kegiatan (Otomatis)</label>
+                        <input type="text" id="kode_kegiatan_preview" class="form-control bg-light" placeholder="Akan digenerate otomatis..." readonly>
+                        <small class="form-text text-muted">Kode akan digenerate otomatis berdasarkan nama kegiatan saat disimpan.</small>
                     </div>
                     <div class="form-group">
                         <label>Tanggal Mulai</label>
@@ -37,3 +38,29 @@
     </div>
     <!-- /.modal-dialog -->
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var namaInput = document.getElementById('nama_kegiatan');
+    var kodePreview = document.getElementById('kode_kegiatan_preview');
+    
+    namaInput.addEventListener('input', function() {
+        var nama = this.value;
+        if (nama.length >= 3) {
+            // Ambil 3 huruf pertama (hanya huruf)
+            var prefix = nama.replace(/[^a-zA-Z]/g, '').substring(0, 3).toUpperCase();
+            if (prefix.length < 3) {
+                prefix = (prefix + 'XXX').substring(0, 3);
+            }
+            // Tanggal sekarang (YYMM)
+            var now = new Date();
+            var yy = String(now.getFullYear()).slice(-2);
+            var mm = String(now.getMonth() + 1).padStart(2, '0');
+            // Preview (dengan xxx sebagai placeholder untuk random)
+            kodePreview.value = prefix + '_' + yy + mm + '_XXX';
+        } else {
+            kodePreview.value = '';
+        }
+    });
+});
+</script>

@@ -14,7 +14,8 @@ class UserModel extends Model
     protected $protectFields    = true;
     protected $allowedFields    = [
         'fullname', 'username', 'email', 'password', 
-        'nik_ktp', 'sobat_id', 'id_role', 'id_supervisor', 'is_active'
+        'nik_ktp', 'sobat_id', 'id_role', 'id_supervisor', 'is_active',
+        'phone_number', 'wilayah_kerja', 'wilayah_supervisi', 'qualification', 'masa_tugas_start', 'masa_tugas_end'
     ];
 
     protected $useTimestamps = true;

@@ -11,7 +11,7 @@
  Target Server Version : 80030 (8.0.30)
  File Encoding         : 65001
 
- Date: 29/01/2026 16:16:53
+ Date: 30/01/2026 16:47:11
 */
 
 SET NAMES utf8mb4;
@@ -238,6 +238,24 @@ INSERT INTO `anomali_log` VALUES (197, 296, 3, 'Nilai tidak valid', 'Anomali dit
 INSERT INTO `anomali_log` VALUES (198, 21, 3, 'NIK tidak valid', 'Anomali ditemukan dalam pengujian skala besar: 198', '2026-01-29 14:17:55');
 INSERT INTO `anomali_log` VALUES (199, 15, 7, 'Data melebihi batas wajar', 'Anomali ditemukan dalam pengujian skala besar: 199', '2026-01-29 14:17:55');
 INSERT INTO `anomali_log` VALUES (200, 305, 3, 'Tanggal tidak valid', 'Anomali ditemukan dalam pengujian skala besar: 200', '2026-01-29 14:17:55');
+
+-- ----------------------------
+-- Table structure for audit_logs
+-- ----------------------------
+DROP TABLE IF EXISTS `audit_logs`;
+CREATE TABLE `audit_logs`  (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `user_id` int NULL DEFAULT NULL,
+  `action` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `details` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL,
+  `ip_address` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of audit_logs
+-- ----------------------------
 
 -- ----------------------------
 -- Table structure for dokumen_survei
@@ -791,6 +809,26 @@ INSERT INTO `master_kegiatan` VALUES (2, 'Susenas Maret 2026', 'SSN26MAR', '2026
 INSERT INTO `master_kegiatan` VALUES (3, 'Pemutakhiran Registrasi Sosial Ekonomi (RSE) April 2026', 'RSE26APR', '2026-04-01', '2026-04-30', 'Aktif', '2026-01-29 13:57:43');
 INSERT INTO `master_kegiatan` VALUES (4, 'Survei Triwulanan Angkatan Kerja Nasional (Sakernas) Juni 2026', 'STAKERNAS26JUN', '2026-06-01', '2026-06-30', 'Aktif', '2026-01-29 13:57:43');
 INSERT INTO `master_kegiatan` VALUES (5, 'Survei Sosial Ekonomi Nasional (Susenas) September 2026', 'SSN26SEP', '2026-09-01', '2026-09-30', 'Aktif', '2026-01-29 13:57:43');
+
+-- ----------------------------
+-- Table structure for migrations
+-- ----------------------------
+DROP TABLE IF EXISTS `migrations`;
+CREATE TABLE `migrations`  (
+  `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT,
+  `version` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `class` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `group` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `namespace` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `time` int NOT NULL,
+  `batch` int UNSIGNED NOT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of migrations
+-- ----------------------------
+INSERT INTO `migrations` VALUES (1, '2026-01-30-100000', 'App\\Database\\Migrations\\CreateAuditLogsTable', 'default', 'App', 1769763387, 1);
 
 -- ----------------------------
 -- Table structure for roles

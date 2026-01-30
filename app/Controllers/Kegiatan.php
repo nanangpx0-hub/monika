@@ -34,19 +34,36 @@ class Kegiatan extends BaseController
             return redirect()->to('dashboard');
         }
 
+        // Validasi manual untuk field yang dikirim via form
+        $rules = [
+            'nama_kegiatan' => 'required|min_length[3]|max_length[100]',
+            'tanggal_mulai' => 'required|valid_date',
+            'tanggal_selesai' => 'required|valid_date',
+        ];
+
+        if (!$this->validate($rules)) {
+            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+        }
+
+        $namaKegiatan = $this->request->getPost('nama_kegiatan');
+        
+        // Auto-generate kode kegiatan
+        $kodeKegiatan = $this->kegiatanModel->generateKode($namaKegiatan);
+
         $data = [
-            'nama_kegiatan' => $this->request->getPost('nama_kegiatan'),
-            'kode_kegiatan' => strtoupper($this->request->getPost('kode_kegiatan')),
+            'nama_kegiatan' => $namaKegiatan,
+            'kode_kegiatan' => $kodeKegiatan,
             'tanggal_mulai' => $this->request->getPost('tanggal_mulai'),
             'tanggal_selesai' => $this->request->getPost('tanggal_selesai'),
             'status' => 'Aktif'
         ];
 
-        if (!$this->kegiatanModel->save($data)) {
-            return redirect()->back()->withInput()->with('errors', $this->kegiatanModel->errors());
+        // Gunakan insert() dengan skipValidation untuk bypass model validation
+        if (!$this->kegiatanModel->skipValidation(true)->insert($data)) {
+            return redirect()->back()->withInput()->with('errors', ['Gagal menyimpan data.']);
         }
 
-        return redirect()->to('kegiatan')->with('success', 'Kegiatan berhasil ditambahkan.');
+        return redirect()->to('kegiatan')->with('success', 'Kegiatan berhasil ditambahkan dengan kode: ' . $kodeKegiatan);
     }
 
     public function updateStatus($id)
@@ -72,7 +89,12 @@ class Kegiatan extends BaseController
             return redirect()->to('dashboard');
         }
 
-        $this->kegiatanModel->delete($id);
+        // Use direct Query Builder to avoid CI4 Model type issues
+        $db = \Config\Database::connect();
+        $db->table('master_kegiatan')
+            ->where('id_kegiatan', (int) $id)
+            ->delete();
+            
         return redirect()->to('kegiatan')->with('success', 'Kegiatan dihapus.');
     }
 }

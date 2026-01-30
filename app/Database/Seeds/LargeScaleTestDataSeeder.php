@@ -41,7 +41,7 @@ class LargeScaleTestDataSeeder extends Seeder
                 'kode_wilayah' => 'ID-' . sprintf('%03d', $i % 100), // Cycle 000-099
                 'id_petugas_pendataan' => $pclIds[array_rand($pclIds)],
                 'processed_by' => $processorIds[array_rand($processorIds)],
-                'status' => ['Uploaded', 'Sudah Entry', 'Error', 'Valid'][array_rand(['Uploaded', 'Sudah Entry', 'Error', 'Valid'])],
+                'status' => ['Setor', 'Sudah Entry', 'Error', 'Valid'][array_rand(['Setor', 'Sudah Entry', 'Error', 'Valid'])],
                 'pernah_error' => rand(0, 1),
                 'tanggal_setor' => rand(0, 1) ? date('Y-m-d', strtotime('-' . rand(1, 30) . ' days')) : null
             ];

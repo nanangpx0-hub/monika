@@ -53,10 +53,10 @@ class Users extends ResourceController
     public function create()
     {
         $rules = [
-            'fullname' => 'required|min_length(3)|max_length(100)',
-            'username' => 'required|min_length(3)|max_length(50)|is_unique[users.username]',
+            'fullname' => 'required|min_length[3]|max_length[100]',
+            'username' => 'required|min_length[3]|max_length[50]|is_unique[users.username]',
             'email' => 'required|valid_email|is_unique[users.email]',
-            'password' => 'required|min_length(6)',
+            'password' => 'required|min_length[6]',
             'confpassword' => 'required|matches[password]',
             'id_role' => 'required|integer'
         ];
@@ -73,6 +73,10 @@ class Users extends ResourceController
             // Note: Password hashing is handled by Model callback 'hashPassword'
             'nik_ktp' => $this->request->getVar('nik_ktp'),
             'sobat_id' => $this->request->getVar('sobat_id'),
+            'phone_number' => $this->request->getVar('phone_number'),
+            'wilayah_kerja' => $this->request->getVar('wilayah_kerja'),
+            'wilayah_supervisi' => $this->request->getVar('wilayah_supervisi'),
+            'qualification' => $this->request->getVar('qualification'),
             'id_role' => $this->request->getVar('id_role'),
             'is_active' => 1
         ];
@@ -100,8 +104,8 @@ class Users extends ResourceController
         }
 
         $rules = [
-            'fullname' => 'if_exist|min_length(3)|max_length(100)',
-            'username' => "if_exist|min_length(3)|max_length(50)|is_unique[users.username,id_user,{$id}]",
+            'fullname' => 'if_exist|min_length[3]|max_length[100]',
+            'username' => "if_exist|min_length[3]|max_length[50]|is_unique[users.username,id_user,{$id}]",
             'email' => "if_exist|valid_email|is_unique[users.email,id_user,{$id}]",
             'id_role' => 'if_exist|integer'
         ];

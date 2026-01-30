@@ -50,12 +50,12 @@ class DokumenSurveiSeeder extends Seeder
             $processed_by = $processorIds[array_rand($processorIds)];
 
             // Status acak
-            $status_list = ['Uploaded', 'Sudah Entry', 'Error', 'Valid'];
+            $status_list = ['Setor', 'Sudah Entry', 'Error', 'Valid'];
             $status = $status_list[array_rand($status_list)];
 
             // Tanggal setor acak
             $tanggal_setor = null;
-            if ($status !== 'Uploaded') {
+            if ($status !== 'Setor') {
                 $tanggal_setor = date('Y-m-d', strtotime('+' . rand(1, 30) . ' days'));
             }
 

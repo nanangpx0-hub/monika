@@ -1,0 +1,406 @@
+openapi: 3.0.3
+info:
+  title: MONIKA API
+  description: |
+    API untuk Sistem Monitoring dan Manajemen Kegiatan Survey (MONIKA).
+    
+    ## Autentikasi
+    API menggunakan JWT (JSON Web Token) untuk autentikasi. Token dikirim via header `Authorization: Bearer {token}`.
+    
+    ## Endpoint Overview
+    - **Auth**: Login dan mendapatkan token
+    - **Users**: CRUD operasi untuk manajemen user
+    - **PCL**: Manajemen Petugas Pendataan Lapangan
+    - **PML**: Manajemen Petugas Monitoring Lapangan
+  version: 1.0.0
+  contact:
+    name: BPS Support
+    email: support@bps.go.id
+
+servers:
+  - url: http://localhost:8080/api
+    description: Development Server
+  - url: https://monika.bps.go.id/api
+    description: Production Server
+
+tags:
+  - name: Auth
+    description: Autentikasi dan Token
+  - name: Users
+    description: Manajemen User Sistem
+  - name: PCL
+    description: Manajemen Petugas Pendataan Lapangan
+  - name: PML
+    description: Manajemen Petugas Monitoring Lapangan
+
+paths:
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Login dan dapatkan JWT token
+      description: Autentikasi user dengan username/email dan password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - login_id
+                - password
+              properties:
+                login_id:
+                  type: string
+                  description: Username atau email
+                  example: admin
+                password:
+                  type: string
+                  format: password
+                  example: password123
+      responses:
+        '200':
+          description: Login berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  message:
+                    type: string
+                    example: Login successful
+                  token:
+                    type: string
+                    description: JWT Token
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                  user:
+                    $ref: '#/components/schemas/User'
+        '401':
+          description: Kredensial tidak valid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /users:
+    get:
+      tags:
+        - Users
+      summary: Daftar semua user
+      description: Mendapatkan daftar user dengan pagination dan filter
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: search
+          in: query
+          description: Cari berdasarkan nama, username, atau email
+          schema:
+            type: string
+        - name: role
+          in: query
+          description: Filter berdasarkan role ID
+          schema:
+            type: integer
+        - name: page
+          in: query
+          description: Nomor halaman
+          schema:
+            type: integer
+            default: 1
+      responses:
+        '200':
+          description: Daftar user berhasil diambil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 200
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+                  pager:
+                    $ref: '#/components/schemas/Pagination'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      tags:
+        - Users
+      summary: Tambah user baru
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+      responses:
+        '201':
+          description: User berhasil dibuat
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    example: 201
+                  message:
+                    type: string
+                    example: User created successfully
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /users/{id}:
+    get:
+      tags:
+        - Users
+      summary: Detail user
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200':
+          description: Detail user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+        - Users
+      summary: Update user
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdate'
+      responses:
+        '200':
+          description: User berhasil diupdate
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+        - Users
+      summary: Hapus user
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200':
+          description: User berhasil dihapus
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT Token dari endpoint /auth/login
+
+  parameters:
+    UserId:
+      name: id
+      in: path
+      required: true
+      description: ID User
+      schema:
+        type: integer
+        example: 1
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id_user:
+          type: integer
+          example: 1
+        fullname:
+          type: string
+          example: John Doe
+        username:
+          type: string
+          example: johndoe
+        email:
+          type: string
+          format: email
+          example: john@example.com
+        nik_ktp:
+          type: string
+          example: "3578012345678901"
+        sobat_id:
+          type: string
+          example: SBID001
+        phone_number:
+          type: string
+          example: "081234567890"
+        id_role:
+          type: integer
+          description: "1=Admin, 2=Viewer, 3=PCL, 4=Pengolah, 5=PML"
+          example: 3
+        wilayah_kerja:
+          type: string
+          example: Kec. Sukolilo
+        is_active:
+          type: integer
+          example: 1
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    UserCreate:
+      type: object
+      required:
+        - fullname
+        - username
+        - email
+        - password
+        - confpassword
+        - id_role
+      properties:
+        fullname:
+          type: string
+          minLength: 3
+          maxLength: 100
+          example: John Doe
+        username:
+          type: string
+          minLength: 3
+          maxLength: 50
+          example: johndoe
+        email:
+          type: string
+          format: email
+          example: john@example.com
+        password:
+          type: string
+          format: password
+          minLength: 6
+          example: password123
+        confpassword:
+          type: string
+          format: password
+          example: password123
+        nik_ktp:
+          type: string
+          pattern: '^\d{16}$'
+          example: "3578012345678901"
+        sobat_id:
+          type: string
+          example: SBID001
+        phone_number:
+          type: string
+          example: "081234567890"
+        id_role:
+          type: integer
+          example: 3
+        wilayah_kerja:
+          type: string
+          example: Kec. Sukolilo
+
+    UserUpdate:
+      type: object
+      properties:
+        fullname:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+          description: Opsional, kosongkan jika tidak ingin mengubah password
+        id_role:
+          type: integer
+        is_active:
+          type: integer
+          enum: [0, 1]
+
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+        perPage:
+          type: integer
+        total:
+          type: integer
+        pageCount:
+          type: integer
+
+    Error:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 401
+        error:
+          type: string
+          example: Unauthorized
+        messages:
+          type: object
+          additionalProperties:
+            type: string
+
+  responses:
+    Unauthorized:
+      description: Token tidak valid atau tidak ada
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: Resource tidak ditemukan
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: integer
+                example: 404
+              message:
+                type: string
+                example: User not found
+    ValidationError:
+      description: Validasi gagal
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: integer
+                example: 400
+              messages:
+                type: object
+                example:
+                  email: The email field is required

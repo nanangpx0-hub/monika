@@ -78,12 +78,12 @@ class Auth extends BaseController
     {
         // 1. Validation Rules
         $rules = [
-            'fullname' => 'required|min_length(3)|max_length(100)',
-            'username' => 'required|min_length(3)|max_length(50)|is_unique[users.username]',
+            'fullname' => 'required|min_length[3]|max_length[100]',
+            'username' => 'required|min_length[3]|max_length[50]|is_unique[users.username]',
             'email' => 'required|valid_email|is_unique[users.email]',
-            'password' => 'required|min_length(6)',
+            'password' => 'required|min_length[6]',
             'confpassword' => 'required|matches[password]',
-            'nik_ktp' => 'required|min_length(16)|max_length(16)|numeric',
+            'nik_ktp' => 'required|min_length[16]|max_length[16]|numeric',
             'sobat_id' => 'required',
             'id_role' => 'required|in_list[3,4]' // 3=PCL, 4=Pengolahan
         ];
