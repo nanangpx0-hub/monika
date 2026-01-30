@@ -1,0 +1,12 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="512" height="512" rx="64" fill="transparent"/>
+<!-- Stylized Chart / Data Icon matching BPS colors (Blue, Orange, Green) -->
+<path d="M140 380V250" stroke="#00ADEF" stroke-width="40" stroke-linecap="round"/>
+<path d="M256 380V180" stroke="#F7941E" stroke-width="40" stroke-linecap="round"/>
+<path d="M372 380V130" stroke="#8CC63F" stroke-width="40" stroke-linecap="round"/>
+<!-- Abstract Connection Line -->
+<path d="M140 250L256 180L372 130" stroke="#231F20" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.1"/>
+<circle cx="140" cy="380" r="20" fill="#00ADEF"/>
+<circle cx="256" cy="380" r="20" fill="#F7941E"/>
+<circle cx="372" cy="380" r="20" fill="#8CC63F"/>
+</svg>

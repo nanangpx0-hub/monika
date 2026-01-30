@@ -1,0 +1,10 @@
+# Disable directory browsing
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Redirect all requests to public folder
+    RewriteCond %{REQUEST_URI} !^/monika/public/
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
