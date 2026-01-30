@@ -76,21 +76,24 @@ class Auth extends BaseController
 
     public function registerProcess()
     {
+        // 1. Validation Rules
         $rules = [
             'fullname' => 'required|min_length(3)|max_length(100)',
             'username' => 'required|min_length(3)|max_length(50)|is_unique[users.username]',
             'email' => 'required|valid_email|is_unique[users.email]',
             'password' => 'required|min_length(6)',
-            'confpassword' => 'matches[password]',
+            'confpassword' => 'required|matches[password]',
             'nik_ktp' => 'required|min_length(16)|max_length(16)|numeric',
             'sobat_id' => 'required',
             'id_role' => 'required|in_list[3,4]' // 3=PCL, 4=Pengolahan
         ];
 
+        // 2. Validate Input
         if (!$this->validate($rules)) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
+        // 3. Prepare Data
         $userModel = new UserModel();
         $data = [
             'fullname' => $this->request->getVar('fullname'),
@@ -100,13 +103,23 @@ class Auth extends BaseController
             'nik_ktp' => $this->request->getVar('nik_ktp'),
             'sobat_id' => $this->request->getVar('sobat_id'),
             'id_role' => $this->request->getVar('id_role'),
-            'is_active' => 1 // Auto active as per requirement implicit
+            'is_active' => 1 // Active by default
         ];
 
-        $userModel->save($data);
-
-        session()->setFlashdata('success', 'Registrasi berhasil. Silakan login.');
-        return redirect()->to('login');
+        // 4. Save User
+        try {
+            if ($userModel->save($data)) {
+                // 5. Success Message & Redirect to LOGIN (Strict Requirement)
+                session()->setFlashdata('success', 'Registrasi berhasil. Silakan login dengan akun baru Anda.');
+                return redirect()->to('login');
+            } else {
+                // Model validation error fallback
+                return redirect()->back()->withInput()->with('errors', $userModel->errors());
+            }
+        } catch (\Exception $e) {
+            // Unexpected error handling
+            return redirect()->back()->withInput()->with('errors', ['db' => 'Terjadi kesalahan sistem: ' . $e->getMessage()]);
+        }
     }
 
     public function logout()
