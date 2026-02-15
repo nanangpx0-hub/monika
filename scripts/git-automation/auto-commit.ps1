@@ -151,16 +151,24 @@ try {
     
     $filesToStage = Get-FilteredFiles -Files $allChangedFiles
     
-    if ($filesToStage.Count -eq 0) {
+    if (-not $filesToStage -or $filesToStage.Count -eq 0) {
         Write-LogWarning "No files to stage after filtering"
         exit 0
     }
     
     try {
-        foreach ($file in $filesToStage) {
-            git add $file 2>$null
+        $fileCount = 0
+        if ($filesToStage -is [array]) {
+            foreach ($file in $filesToStage) {
+                git add $file 2>$null
+                $fileCount++
+            }
+        } else {
+            # Single file
+            git add $filesToStage 2>$null
+            $fileCount = 1
         }
-        Write-LogSuccess "Staged $($filesToStage.Count) file(s)"
+        Write-LogSuccess "Staged $fileCount file(s)"
     }
     catch {
         Write-LogError "Failed to stage files: $_"

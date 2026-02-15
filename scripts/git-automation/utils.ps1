@@ -448,4 +448,5 @@ function Get-FilteredFiles {
 }
 
 # Export all functions
-Export-ModuleMember -Function * -Variable *
+# Note: Export-ModuleMember should not be used when sourcing scripts directly
+# Commenting out to avoid PowerShell warnings when dot-sourcing

@@ -46,7 +46,7 @@ $CODE_QUALITY_TOOLS = @(
 
 # ---- AUTO-COMMIT CONFIGURATION ----
 $AUTO_COMMIT_ENABLED = $true
-$AUTO_COMMIT_UNTRACKED_FILES = $false  # Only track modified files by default
+$AUTO_COMMIT_UNTRACKED_FILES = $true  # Include untracked files by default
 $EXCLUDED_PATHS = @(
     "vendor/*",
     "writable/*",
@@ -65,4 +65,5 @@ $PUSH_TIMEOUT = 300
 $CODE_QUALITY_TIMEOUT = 120
 
 # Export configuration
-Export-ModuleMember -Variable * -Function *
+# Note: Export-ModuleMember should not be used when sourcing scripts directly
+# Commenting out to avoid PowerShell warnings when dot-sourcing
