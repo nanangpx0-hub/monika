@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap4.min.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+  <link rel="stylesheet" href="<?= base_url('assets/css/monika-ui.css'); ?>">
 </head>
 <body class="hold-transition sidebar-mini">
 <div class="wrapper">
@@ -27,9 +28,14 @@
       <li class="nav-item"><a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a></li>
     </ul>
     <ul class="navbar-nav ml-auto">
-      <li class="nav-item"><a class="nav-link" href="<?= base_url('logout'); ?>" role="button"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+      <li class="nav-item"><a class="nav-link monika-logout-link" href="<?= base_url('logout'); ?>" role="button" aria-label="Logout"><i class="fas fa-sign-out-alt"></i> <span class="logout-text">Logout</span></a></li>
     </ul>
   </nav>
+
+  <a class="monika-logout-fab" href="<?= base_url('logout'); ?>" role="button" aria-label="Logout cepat">
+    <i class="fas fa-sign-out-alt"></i>
+    <span class="logout-text">Logout</span>
+  </a>
 
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <a href="/dashboard" class="brand-link">

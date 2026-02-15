@@ -1,0 +1,122 @@
+/* Shared UI fixes for reliable logout visibility across layouts and breakpoints. */
+.main-header {
+    z-index: 1050;
+}
+
+.main-header .navbar-nav .nav-link[href*='logout'],
+.main-header .navbar-nav .monika-logout-link {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 0.4rem;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: relative;
+    z-index: 1060;
+    color: #9b1c1c !important;
+    font-weight: 600;
+    background: #fff5f5;
+    border: 1px solid #f3c2c2;
+    border-radius: 999px;
+    padding: 0.35rem 0.8rem !important;
+    line-height: 1.2;
+    min-height: 2rem;
+}
+
+.main-header .navbar-nav .nav-link[href*='logout']:hover,
+.main-header .navbar-nav .monika-logout-link:hover,
+.main-header .navbar-nav .nav-link[href*='logout']:focus,
+.main-header .navbar-nav .monika-logout-link:focus {
+    color: #ffffff !important;
+    background: #c82333;
+    border-color: #c82333;
+}
+
+.main-header .navbar-nav .nav-link[href*='logout'] i,
+.main-header .navbar-nav .monika-logout-link i {
+    font-size: 0.95rem;
+}
+
+.main-sidebar .nav-link[href*='logout'],
+.main-sidebar .monika-sidebar-logout {
+    display: flex !important;
+    align-items: center;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: relative;
+    z-index: 5;
+    color: #ffffff !important;
+    background: #c82333;
+    border-radius: 0.35rem;
+    margin: 0.35rem 0.5rem 0;
+}
+
+.main-sidebar .nav-link[href*='logout']:hover,
+.main-sidebar .monika-sidebar-logout:hover,
+.main-sidebar .nav-link[href*='logout']:focus,
+.main-sidebar .monika-sidebar-logout:focus {
+    background: #a71d2a;
+    color: #ffffff !important;
+}
+
+.monika-logout-fab {
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    z-index: 1100;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    min-width: 3rem;
+    min-height: 3rem;
+    padding: 0.65rem 0.9rem;
+    border-radius: 999px;
+    border: 1px solid #c82333;
+    background: #c82333;
+    color: #ffffff !important;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 0.4rem 0.95rem rgba(0, 0, 0, 0.25);
+}
+
+.monika-logout-fab:hover,
+.monika-logout-fab:focus {
+    background: #a71d2a;
+    border-color: #a71d2a;
+    color: #ffffff !important;
+    text-decoration: none;
+}
+
+@media (max-width: 991.98px) {
+    .monika-logout-fab {
+        display: inline-flex;
+    }
+
+    .main-header .navbar-nav .nav-link[href*='logout'],
+    .main-header .navbar-nav .monika-logout-link {
+        padding: 0.35rem 0.65rem !important;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .main-header .navbar-nav .nav-link[href*='logout'],
+    .main-header .navbar-nav .monika-logout-link {
+        font-size: 0.85rem;
+        min-height: 1.9rem;
+    }
+
+    .main-header .navbar-nav .nav-link[href*='logout'] .logout-text,
+    .main-header .navbar-nav .monika-logout-link .logout-text,
+    .monika-logout-fab .logout-text {
+        display: none;
+    }
+
+    .monika-logout-fab {
+        right: 0.8rem;
+        bottom: 0.8rem;
+        padding: 0.65rem;
+        min-width: 2.9rem;
+        min-height: 2.9rem;
+    }
+}

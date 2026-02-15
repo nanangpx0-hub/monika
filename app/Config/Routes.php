@@ -23,7 +23,14 @@ $routes->group('', ['filter' => 'auth'], static function ($routes): void {
 
     $routes->get('presensi', 'Presensi::index');
     $routes->post('presensi/submit', 'Presensi::submit', ['filter' => 'csrf']);
-    $routes->get('kartu-kendali', 'KartuKendali::index');
+    
+    $routes->group('kartu-kendali', static function ($routes): void {
+        $routes->get('/', 'KartuKendali::index');
+        $routes->get('detail/(:segment)', 'KartuKendali::detail/$1');
+        $routes->post('store', 'KartuKendali::store', ['filter' => 'csrf']);
+        $routes->post('delete', 'KartuKendali::delete', ['filter' => 'csrf']);
+    });
+    
     $routes->get('logistik', 'Logistik::index');
     $routes->get('uji-petik', 'UjiPetik::index');
 });

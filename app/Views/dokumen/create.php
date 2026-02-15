@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+  <link rel="stylesheet" href="<?= base_url('assets/css/monika-ui.css'); ?>">
 </head>
 <body class="hold-transition sidebar-mini">
 <div class="wrapper">
@@ -26,12 +27,17 @@
     
     <ul class="navbar-nav ml-auto">
       <li class="nav-item">
-        <a class="nav-link" href="<?= base_url('logout'); ?>" role="button">
-          <i class="fas fa-sign-out-alt"></i> Logout
+        <a class="nav-link monika-logout-link" href="<?= base_url('logout'); ?>" role="button" aria-label="Logout">
+          <i class="fas fa-sign-out-alt"></i> <span class="logout-text">Logout</span>
         </a>
       </li>
     </ul>
   </nav>
+
+  <a class="monika-logout-fab" href="<?= base_url('logout'); ?>" role="button" aria-label="Logout cepat">
+    <i class="fas fa-sign-out-alt"></i>
+    <span class="logout-text">Logout</span>
+  </a>
 
   <!-- Main Sidebar -->
   <aside class="main-sidebar sidebar-dark-primary elevation-4">

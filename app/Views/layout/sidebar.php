@@ -64,6 +64,16 @@
                     </a>
                 </li>
 
+                <?php if (session()->get('is_logged_in')): ?>
+                <li class="nav-header">AKUN</li>
+                <li class="nav-item">
+                    <a href="<?= base_url('logout'); ?>" class="nav-link monika-sidebar-logout" role="button" aria-label="Logout">
+                        <i class="nav-icon fas fa-sign-out-alt"></i>
+                        <p>Logout</p>
+                    </a>
+                </li>
+                <?php endif; ?>
+
             </ul>
         </nav>
         <!-- /.sidebar-menu -->
