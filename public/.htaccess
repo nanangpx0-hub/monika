@@ -3,6 +3,7 @@
 # ----------------------------------------------------------------------
 <IfModule mod_rewrite.c>
     RewriteEngine On
+    RewriteBase /monika/public/
 
     # Jika Anda menggunakan HTTPS di Hosting nanti, uncomment 2 baris di bawah ini
     # RewriteCond %{HTTPS} off
@@ -13,8 +14,8 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
 
-    # Arahkan semua request lainnya ke index.php
-    RewriteRule ^(.*)$ index.php/$1 [L,QSA]
+    # Arahkan semua request lainnya ke index.php (compat mod_fcgid)
+    RewriteRule ^(.*)$ index.php?/$1 [L,QSA]
 </IfModule>
 
 <IfModule !mod_rewrite.c>

@@ -138,7 +138,7 @@ function Send-Notification {
             [Windows.Data.Xml.Dom.XmlDocument, Windows.Data.Xml.Dom.XmlDocument, ContentType = WindowsRuntime] | Out-Null
             
             # Fallback to API call if Toast fails
-            Write-LogInfo "[$Type] $Title: $Message"
+            Write-LogInfo "[${Type}] ${Title}: ${Message}"
         }
     } catch {
         Write-LogWarning "Failed to send system notification: $_. Message written to log instead."

@@ -66,13 +66,13 @@ class TandaTerima extends BaseController
 
         // Redirect dengan pesan sukses
         session()->setFlashdata('pesan', 'Data berhasil disimpan.');
-        return redirect()->to('/tanda-terima');
+        return redirect()->to(base_url('tanda-terima'));
     }
 
     public function delete($id)
     {
         $this->tandaTerimaModel->delete($id);
         session()->setFlashdata('pesan', 'Data berhasil dihapus.');
-        return redirect()->to('/tanda-terima');
+        return redirect()->to(base_url('tanda-terima'));
     }
 }

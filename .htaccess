@@ -1,10 +1,18 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
-    # Aturan 1: Arahkan akses root (kosong) ke folder public/
-    RewriteRule ^$ public/ [L]
+    # Normalisasi URL project agar konsisten ke lowercase /monika/
+    RewriteCond %{REQUEST_URI} ^/MONIKA(/.*)?$
+    RewriteRule ^ %{REQUEST_SCHEME}://%{HTTP_HOST}/monika%1 [R=302,L]
 
-    # Aturan 2: Arahkan semua request lainnya ke folder public/
-    # (kecuali jika request tersebut sudah mengarah ke public)
-    RewriteRule (.*) public/$1 [L]
+    # Jangan rewrite lagi jika URI sudah mengarah ke folder public
+    RewriteRule ^public/ - [L]
+
+    # Lewati jika file/folder fisik di root memang ada
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # Arahkan request aplikasi ke front controller di public/
+    RewriteRule ^(.*)$ public/$1 [L,QSA]
 </IfModule>

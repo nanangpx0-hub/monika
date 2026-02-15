@@ -117,10 +117,10 @@ try {
     }
     else {
         if ($scope) {
-            $commitMsg = "$commitType($scope): $description"
+            $commitMsg = "${commitType}(${scope}): ${description}"
         }
         else {
-            $commitMsg = "$commitType: $description"
+            $commitMsg = "${commitType}: ${description}"
         }
     }
     
@@ -258,23 +258,20 @@ try {
     # SUCCESS
     # ============================================================================
     
-    Write-LogSuccess "╔═══════════════════════════════════════════════════╗"
-    Write-LogSuccess "║    Auto-Commit Completed Successfully!           ║"
-    Write-LogSuccess "╚═══════════════════════════════════════════════════╝"
+    Write-LogSuccess "=========================================="
+    Write-LogSuccess "Auto-Commit Completed Successfully!"
+    Write-LogSuccess "=========================================="
     Write-LogSuccess "Commit: $commitMsg"
     Write-LogSuccess "Branch: $($status.Branch)"
     Write-LogSuccess "Files: $($filesToStage.Count)"
     
-    Send-Notification -Title "Auto-Commit Successful" `
-                     -Message "Committed and pushed: $commitMsg" `
-                     -Type "SUCCESS"
+    Send-Notification -Title "Auto-Commit Successful" -Message "Committed and pushed: ${commitMsg}" -Type "SUCCESS"
     
     exit 0
     
 } catch {
     Write-LogError "Unexpected error: $_"
-    Send-Notification -Title "Auto-Commit Failed" `
-                     -Message "Error: $($_.Exception.Message)" `
-                     -Type "ERROR"
+    $errorMsg = $_.Exception.Message
+    Send-Notification -Title "Auto-Commit Failed" -Message "Error: $errorMsg" -Type "ERROR"
     exit 1
 }
