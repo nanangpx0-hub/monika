@@ -11,6 +11,10 @@
 
     <!-- Sidebar -->
     <div class="sidebar">
+        <?php
+            $sessionRole = (string) (session()->get('id_role') ?? session()->get('role') ?? '');
+            $isAdmin = in_array(strtolower($sessionRole), ['1', 'admin'], true);
+        ?>
         <!-- Sidebar Menu -->
         <nav class="mt-2">
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
@@ -31,6 +35,20 @@
                     <a href="<?= base_url('tanda-terima') ?>" class="nav-link <?= (strpos(uri_string(), 'tanda-terima') !== false) ? 'active' : '' ?>">
                         <i class="nav-icon fas fa-file-signature"></i>
                         <p>Tanda Terima</p>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="<?= base_url('logistik') ?>" class="nav-link <?= (strpos(uri_string(), 'logistik') !== false) ? 'active' : '' ?>">
+                        <i class="nav-icon fas fa-boxes"></i>
+                        <p>Logistik</p>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="<?= base_url('dokumen') ?>" class="nav-link <?= (strpos(uri_string(), 'dokumen') !== false) ? 'active' : '' ?>">
+                        <i class="nav-icon fas fa-file-alt"></i>
+                        <p>Dokumen</p>
                     </a>
                 </li>
                 
@@ -63,6 +81,31 @@
                         <p>Uji Petik</p>
                     </a>
                 </li>
+
+                <?php if ($isAdmin): ?>
+                <li class="nav-header">MANAJEMEN</li>
+
+                <li class="nav-item">
+                    <a href="<?= base_url('kegiatan') ?>" class="nav-link <?= (strpos(uri_string(), 'kegiatan') !== false) ? 'active' : '' ?>">
+                        <i class="nav-icon fas fa-calendar-alt"></i>
+                        <p>Kegiatan</p>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="<?= base_url('laporan') ?>" class="nav-link <?= (strpos(uri_string(), 'laporan') !== false) ? 'active' : '' ?>">
+                        <i class="nav-icon fas fa-chart-line"></i>
+                        <p>Laporan</p>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="<?= base_url('monitoring') ?>" class="nav-link <?= (strpos(uri_string(), 'monitoring') !== false) ? 'active' : '' ?>">
+                        <i class="nav-icon fas fa-chart-pie"></i>
+                        <p>Monitoring</p>
+                    </a>
+                </li>
+                <?php endif; ?>
 
                 <?php if (session()->get('is_logged_in')): ?>
                 <li class="nav-header">AKUN</li>

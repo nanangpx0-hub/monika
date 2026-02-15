@@ -88,6 +88,139 @@ class Auth extends BaseController
         ]);
     }
 
+    public function registerForm()
+    {
+        if (session()->get('is_logged_in')) {
+            return redirect()->to(base_url('dashboard'));
+        }
+
+        return view('auth/register', [
+            'title' => 'MONIKA REGISTER',
+        ]);
+    }
+
+    public function register()
+    {
+        if (session()->get('is_logged_in')) {
+            return redirect()->to(base_url('dashboard'));
+        }
+
+        $validationRules = [
+            'username'     => 'required|min_length[3]|max_length[50]|is_unique[users.username]',
+            'password'     => 'required|min_length[6]',
+            'confpassword' => 'required|matches[password]',
+        ];
+
+        if ($this->hasUserColumn('email')) {
+            $validationRules['email'] = 'required|valid_email|is_unique[users.email]';
+        }
+
+        if ($this->hasUserColumn('fullname') || $this->hasUserColumn('nama')) {
+            $validationRules['fullname'] = 'required|min_length[3]|max_length[100]';
+        }
+
+        if ($this->hasUserColumn('id_role')) {
+            $validationRules['id_role'] = 'required|integer';
+        }
+
+        if ($this->hasUserColumn('nik_ktp')) {
+            $validationRules['nik_ktp'] = 'permit_empty|numeric|exact_length[16]';
+        }
+
+        if ($this->hasUserColumn('sobat_id')) {
+            $validationRules['sobat_id'] = 'permit_empty|max_length[50]';
+        }
+
+        if (! $this->validate($validationRules)) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('errors', $this->validator->getErrors());
+        }
+
+        $username = trim((string) $this->request->getPost('username'));
+        $fullname = trim((string) $this->request->getPost('fullname'));
+        $email = trim((string) $this->request->getPost('email'));
+        $roleId = trim((string) $this->request->getPost('id_role'));
+        $nikKtp = trim((string) $this->request->getPost('nik_ktp'));
+        $sobatId = trim((string) $this->request->getPost('sobat_id'));
+
+        if ($fullname === '') {
+            $fullname = $username;
+        }
+
+        $insertData = [];
+
+        if ($this->hasUserColumn('username')) {
+            $insertData['username'] = $username;
+        }
+
+        if ($this->hasUserColumn('password')) {
+            $insertData['password'] = password_hash((string) $this->request->getPost('password'), PASSWORD_BCRYPT);
+        }
+
+        if ($this->hasUserColumn('fullname')) {
+            $insertData['fullname'] = $fullname;
+        }
+
+        if ($this->hasUserColumn('nama')) {
+            $insertData['nama'] = $fullname;
+        }
+
+        if ($this->hasUserColumn('email')) {
+            $insertData['email'] = $email;
+        }
+
+        if ($this->hasUserColumn('id_role')) {
+            $insertData['id_role'] = $roleId === '' ? 3 : (int) $roleId;
+        }
+
+        if ($this->hasUserColumn('role')) {
+            $insertData['role'] = $this->mapLegacyRole($roleId);
+        }
+
+        if ($this->hasUserColumn('nik_ktp') && $nikKtp !== '') {
+            $insertData['nik_ktp'] = $nikKtp;
+        }
+
+        if ($this->hasUserColumn('sobat_id') && $sobatId !== '') {
+            $insertData['sobat_id'] = $sobatId;
+        }
+
+        if ($this->hasUserColumn('is_active')) {
+            $insertData['is_active'] = 1;
+        }
+
+        $now = date('Y-m-d H:i:s');
+        if ($this->hasUserColumn('created_at')) {
+            $insertData['created_at'] = $now;
+        }
+        if ($this->hasUserColumn('updated_at')) {
+            $insertData['updated_at'] = $now;
+        }
+
+        if ($insertData === []) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('errors', ['register' => 'Struktur tabel users tidak mendukung proses registrasi.']);
+        }
+
+        $builder = Database::connect()->table('users');
+        $result = $builder->insert($insertData);
+
+        if (! $result) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('errors', ['register' => 'Gagal menyimpan akun baru.']);
+        }
+
+        return redirect()
+            ->to(base_url('login'))
+            ->with('success', 'Registrasi berhasil. Silakan login menggunakan akun baru Anda.');
+    }
+
     public function logout()
     {
         $session = session();
@@ -311,5 +444,15 @@ class Auth extends BaseController
         }
 
         return in_array($column, $this->userColumns, true);
+    }
+
+    private function mapLegacyRole(string $idRole): string
+    {
+        return match ($idRole) {
+            '1' => 'admin',
+            '4' => 'petugas_pengolahan',
+            '5' => 'pimpinan',
+            default => 'operator_sosial',
+        };
     }
 }

@@ -131,15 +131,40 @@ function Send-Notification {
     }
     
     try {
-        # Use Windows Toast Notification if available
-        if ($IsWindows -or [System.Environment]::OSVersion.Platform -eq 'Win32NT') {
-            [Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime] | Out-Null
-            [Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime] | Out-Null
-            [Windows.Data.Xml.Dom.XmlDocument, Windows.Data.Xml.Dom.XmlDocument, ContentType = WindowsRuntime] | Out-Null
-            
-            # Fallback to API call if Toast fails
-            Write-LogInfo "[${Type}] ${Title}: ${Message}"
+        # Prefer BurntToast module if available (works in regular PowerShell hosts)
+        try {
+            if (Get-Command -Name New-BurntToastNotification -ErrorAction SilentlyContinue) {
+                $btText = @($Title, $Message) | Where-Object { $_ -ne $null }
+                New-BurntToastNotification -Text $btText | Out-Null
+                Write-LogInfo "[${Type}] ${Title}: ${Message} (sent via BurntToast)"
+                return
+            }
+        } catch {
+            Write-LogDebug "BurntToast not available or failed: $_"
         }
+
+        # Try Windows Runtime Toasts (may not be available in some hosts)
+        if ($IsWindows -or [System.Environment]::OSVersion.Platform -eq 'Win32NT') {
+            try {
+                [Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime] | Out-Null
+                [Windows.Data.Xml.Dom.XmlDocument, Windows.Data.Xml.Dom.XmlDocument, ContentType = WindowsRuntime] | Out-Null
+
+                # Construct a simple XML toast and show it if runtime types exist
+                $xml = "<toast><visual><binding template='ToastGeneric'><text>$($Title -replace '&','&amp;')</text><text>$($Message -replace '&','&amp;')</text></binding></visual></toast>"
+                $xmlDoc = New-Object Windows.Data.Xml.Dom.XmlDocument
+                $xmlDoc.LoadXml($xml)
+                $notifier = [Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier($env:COMPUTERNAME)
+                $toast = [Windows.UI.Notifications.ToastNotification]::new($xmlDoc)
+                $notifier.Show($toast)
+                Write-LogInfo "[${Type}] ${Title}: ${Message} (sent via WinRT Toast)"
+                return
+            } catch {
+                Write-LogDebug "WinRT toast not available or failed: $_"
+            }
+        }
+
+        # Final fallback: write notification to log/console
+        Write-LogInfo "[${Type}] ${Title}: ${Message} (logged - no interactive notification available)"
     } catch {
         Write-LogWarning "Failed to send system notification: $_. Message written to log instead."
     }

@@ -44,6 +44,26 @@ class UjiPetik extends BaseController
     }
 
     /**
+     * Show form to edit existing uji petik finding
+     */
+    public function edit($id)
+    {
+        $finding = $this->ujiPetikModel->find($id);
+        if (! $finding) {
+            return redirect()->to('/uji-petik')->with('error', 'Temuan tidak ditemukan.');
+        }
+
+        $data = [
+            'title' => 'Edit Temuan Uji Petik',
+            'finding' => $finding,
+            'nks_list' => $this->nksModel->findAll(),
+            'alasan_list' => ['Salah Ketik', 'Salah Baca', 'Terlewat', 'Salah Kode', 'Lainnya'],
+        ];
+
+        return view('uji_petik/edit', $data);
+    }
+
+    /**
      * Store new uji petik finding
      */
     public function store()
@@ -79,6 +99,46 @@ class UjiPetik extends BaseController
     }
 
     /**
+     * Update existing uji petik finding
+     */
+    public function update($id)
+    {
+        $finding = $this->ujiPetikModel->find($id);
+        if (! $finding) {
+            return redirect()->to('/uji-petik')->with('error', 'Temuan tidak ditemukan.');
+        }
+
+        $rules = [
+            'nks'              => 'required',
+            'no_ruta'          => 'required|integer|greater_than[0]|less_than_equal_to[10]',
+            'variabel'         => 'required',
+            'isian_k'          => 'required',
+            'isian_c'          => 'required',
+            'alasan_kesalahan' => 'required',
+        ];
+
+        if (! $this->validate($rules)) {
+            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+        }
+
+        $data = [
+            'nks'              => $this->request->getPost('nks'),
+            'no_ruta'          => $this->request->getPost('no_ruta'),
+            'variabel'         => $this->request->getPost('variabel'),
+            'isian_k'          => $this->request->getPost('isian_k'),
+            'isian_c'          => $this->request->getPost('isian_c'),
+            'alasan_kesalahan' => $this->request->getPost('alasan_kesalahan'),
+            'catatan'          => $this->request->getPost('catatan'),
+        ];
+
+        if ($this->ujiPetikModel->update($id, $data)) {
+            return redirect()->to('/uji-petik')->with('success', 'Temuan berhasil diperbarui');
+        }
+
+        return redirect()->back()->withInput()->with('error', 'Gagal memperbarui data');
+    }
+
+    /**
      * Delete uji petik finding
      */
     public function delete($id)
@@ -90,4 +150,3 @@ class UjiPetik extends BaseController
         return redirect()->to('/uji-petik')->with('error', 'Gagal menghapus data');
     }
 }
-

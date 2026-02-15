@@ -54,6 +54,9 @@
                         </span>
                     </td>
                     <td class="project-actions">
+                        <a class="btn btn-warning btn-sm" href="<?= base_url('tanda-terima/edit/' . $d['id']); ?>">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
                         <a class="btn btn-danger btn-sm" href="<?= base_url('tanda-terima/delete/' . $d['id']); ?>" onclick="return confirm('Yakin hapus data ini?');">
                             <i class="fas fa-trash"></i> Hapus
                         </a>

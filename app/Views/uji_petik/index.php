@@ -81,6 +81,11 @@
                                             <?php endif; ?>
                                         </td>
                                         <td class="text-center">
+                                            <a href="<?= base_url('uji-petik/edit/' . $finding['id']) ?>" 
+                                               class="btn btn-warning btn-xs"
+                                               title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
                                             <a href="<?= base_url('uji-petik/delete/' . $finding['id']) ?>" 
                                                class="btn btn-danger btn-xs"
                                                onclick="return confirm('Yakin ingin menghapus temuan ini?')">
