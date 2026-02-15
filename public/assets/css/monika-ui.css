@@ -1,122 +1,145 @@
-/* Shared UI fixes for reliable logout visibility across layouts and breakpoints. */
-.main-header {
-    z-index: 1050;
+/* MONIKA Custom UI Styles */
+
+/* Logout Button Styles */
+.monika-logout-link {
+    transition: all 0.3s ease;
 }
 
-.main-header .navbar-nav .nav-link[href*='logout'],
-.main-header .navbar-nav .monika-logout-link {
-    display: inline-flex !important;
-    align-items: center;
-    gap: 0.4rem;
-    visibility: visible !important;
-    opacity: 1 !important;
-    position: relative;
-    z-index: 1060;
-    color: #9b1c1c !important;
-    font-weight: 600;
-    background: #fff5f5;
-    border: 1px solid #f3c2c2;
-    border-radius: 999px;
-    padding: 0.35rem 0.8rem !important;
-    line-height: 1.2;
-    min-height: 2rem;
-}
-
-.main-header .navbar-nav .nav-link[href*='logout']:hover,
-.main-header .navbar-nav .monika-logout-link:hover,
-.main-header .navbar-nav .nav-link[href*='logout']:focus,
-.main-header .navbar-nav .monika-logout-link:focus {
-    color: #ffffff !important;
-    background: #c82333;
-    border-color: #c82333;
-}
-
-.main-header .navbar-nav .nav-link[href*='logout'] i,
-.main-header .navbar-nav .monika-logout-link i {
-    font-size: 0.95rem;
-}
-
-.main-sidebar .nav-link[href*='logout'],
-.main-sidebar .monika-sidebar-logout {
-    display: flex !important;
-    align-items: center;
-    visibility: visible !important;
-    opacity: 1 !important;
-    position: relative;
-    z-index: 5;
-    color: #ffffff !important;
-    background: #c82333;
-    border-radius: 0.35rem;
-    margin: 0.35rem 0.5rem 0;
-}
-
-.main-sidebar .nav-link[href*='logout']:hover,
-.main-sidebar .monika-sidebar-logout:hover,
-.main-sidebar .nav-link[href*='logout']:focus,
-.main-sidebar .monika-sidebar-logout:focus {
-    background: #a71d2a;
-    color: #ffffff !important;
+.monika-logout-link:hover {
+    background-color: rgba(255, 0, 0, 0.1);
 }
 
 .monika-logout-fab {
-    position: fixed;
-    right: 1rem;
-    bottom: 1rem;
-    z-index: 1100;
     display: none;
-    align-items: center;
-    justify-content: center;
-    gap: 0.4rem;
-    min-width: 3rem;
-    min-height: 3rem;
-    padding: 0.65rem 0.9rem;
-    border-radius: 999px;
-    border: 1px solid #c82333;
-    background: #c82333;
-    color: #ffffff !important;
-    font-size: 0.95rem;
-    font-weight: 700;
-    text-decoration: none;
-    box-shadow: 0 0.4rem 0.95rem rgba(0, 0, 0, 0.25);
 }
 
-.monika-logout-fab:hover,
-.monika-logout-fab:focus {
-    background: #a71d2a;
-    border-color: #a71d2a;
-    color: #ffffff !important;
-    text-decoration: none;
+/* Kartu Kendali Specific Styles */
+.card-outline.card-primary {
+    border: 2px solid #007bff;
 }
 
-@media (max-width: 991.98px) {
-    .monika-logout-fab {
-        display: inline-flex;
-    }
+.card-outline.card-primary:hover {
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.3);
+    transform: translateY(-2px);
+    transition: all 0.3s ease;
+}
 
-    .main-header .navbar-nav .nav-link[href*='logout'],
-    .main-header .navbar-nav .monika-logout-link {
-        padding: 0.35rem 0.65rem !important;
+.card-secondary {
+    background-color: #f8f9fa;
+    opacity: 0.7;
+}
+
+.card-warning {
+    background-color: #fff3cd;
+}
+
+.card-success {
+    background-color: #d4edda;
+}
+
+.card-danger {
+    background-color: #f8d7da;
+}
+
+/* Progress Bar Custom Colors */
+.progress-bar.bg-danger {
+    background-color: #dc3545 !important;
+}
+
+.progress-bar.bg-warning {
+    background-color: #ffc107 !important;
+}
+
+.progress-bar.bg-success {
+    background-color: #28a745 !important;
+}
+
+/* DataTables Custom Styling */
+.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+    background: #007bff !important;
+    color: white !important;
+    border-color: #007bff !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    background: #0056b3 !important;
+    color: white !important;
+    border-color: #0056b3 !important;
+}
+
+/* Modal Styling */
+.modal-header.bg-primary {
+    background-color: #007bff !important;
+    color: white;
+}
+
+/* Badge Styling */
+.badge {
+    font-size: 0.85rem;
+    padding: 0.35em 0.65em;
+}
+
+/* Card Hover Effect */
+.card {
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Button Loading State */
+.btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .progress {
+        height: 20px !important;
+    }
+    
+    .progress-bar strong {
+        font-size: 0.8rem;
+    }
+    
+    .card-body h2 {
+        font-size: 1.5rem;
     }
 }
 
-@media (max-width: 575.98px) {
-    .main-header .navbar-nav .nav-link[href*='logout'],
-    .main-header .navbar-nav .monika-logout-link {
-        font-size: 0.85rem;
-        min-height: 1.9rem;
-    }
+/* Alert Styling */
+.alert {
+    border-radius: 0.25rem;
+    margin-bottom: 1rem;
+}
 
-    .main-header .navbar-nav .nav-link[href*='logout'] .logout-text,
-    .main-header .navbar-nav .monika-logout-link .logout-text,
-    .monika-logout-fab .logout-text {
-        display: none;
-    }
+.alert-dismissible .close {
+    padding: 0.75rem 1.25rem;
+}
 
-    .monika-logout-fab {
-        right: 0.8rem;
-        bottom: 0.8rem;
-        padding: 0.65rem;
-        min-width: 2.9rem;
-        min-height: 2.9rem;
-    }
+/* Table Responsive */
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
 }
