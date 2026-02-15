@@ -18,11 +18,6 @@
 <body class="hold-transition sidebar-mini">
 <div class="wrapper">
   <!-- Navbar & Sidebar -->
-  <?php include APPPATH . 'Views/dashboard/navbar_sidebar.php'; // Ideally extract this to a partial ?>
-  <!-- Ideally we should partials for sidebar/navbar, but for now I'll duplicate menu or user includes partial later if asked. 
-       Let's just use full layout to avoid breaking previous steps assumptions or create partial now?
-       Let's create the full layout to be safe.
-  -->
   <nav class="main-header navbar navbar-expand navbar-white navbar-light">
     <ul class="navbar-nav">
       <li class="nav-item"><a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a></li>
