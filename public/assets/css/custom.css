@@ -1,0 +1,11 @@
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+}
+.brand-link .brand-image {
+    width: 33px;
+    height: 33px;
+    object-fit: cover;
+}
+.small-box .icon {
+    top: 5px;
+}

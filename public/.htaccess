@@ -1,0 +1,121 @@
+# ----------------------------------------------------------------------
+# 1. REWRITE ENGINE (Routing CodeIgniter 4)
+# ----------------------------------------------------------------------
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Jika Anda menggunakan HTTPS di Hosting nanti, uncomment 2 baris di bawah ini
+    # RewriteCond %{HTTPS} off
+    # RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+    # Jangan memproses rewrite jika file atau folder fisik memang ada
+    # (Ini penting agar file CSS, JS, dan Gambar di public/ bisa diakses)
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+
+    # Arahkan semua request lainnya ke index.php
+    RewriteRule ^(.*)$ index.php/$1 [L,QSA]
+</IfModule>
+
+<IfModule !mod_rewrite.c>
+    # Fallback jika modul rewrite tidak aktif di server
+    ErrorDocument 404 /index.php
+</IfModule>
+
+# ----------------------------------------------------------------------
+# 2. KEAMANAN (SECURITY)
+# ----------------------------------------------------------------------
+# Matikan Directory Browsing (Mencegah orang melihat daftar file di folder)
+Options -Indexes
+
+# Matikan Server Signature untuk keamanan informasi server
+ServerSignature Off
+
+# Blokir akses ke file sensitif yang diawali titik (seperti .env, .git)
+# Kecuali file .htaccess itu sendiri jika diperlukan, tapi standarnya diblokir akses via browser
+<IfModule mod_authz_core.c>
+    <FilesMatch "^\.">
+        Require all denied
+    </FilesMatch>
+</IfModule>
+<IfModule !mod_authz_core.c>
+    <FilesMatch "^\.">
+        Order allow,deny
+        Deny from all
+    </FilesMatch>
+</IfModule>
+
+# ----------------------------------------------------------------------
+# 3. KOMPRESI GZIP (PERFORMA)
+# Mengompres output HTML/CSS/JS agar loading lebih cepat
+# ----------------------------------------------------------------------
+<IfModule mod_deflate.c>
+    <IfModule filter_module>
+        FilterDeclare   COMPRESS
+        FilterProvider  COMPRESS  DEFLATE resp=Content-Type $text/html
+        FilterProvider  COMPRESS  DEFLATE resp=Content-Type $text/css
+        FilterProvider  COMPRESS  DEFLATE resp=Content-Type $text/plain
+        FilterProvider  COMPRESS  DEFLATE resp=Content-Type $text/xml
+        FilterProvider  COMPRESS  DEFLATE resp=Content-Type $text/x-component
+        FilterProvider  COMPRESS  DEFLATE resp=Content-Type $application/javascript
+        FilterProvider  COMPRESS  DEFLATE resp=Content-Type $application/json
+        FilterProvider  COMPRESS  DEFLATE resp=Content-Type $application/xml
+        FilterProvider  COMPRESS  DEFLATE resp=Content-Type $application/xhtml+xml
+        FilterProvider  COMPRESS  DEFLATE resp=Content-Type $application/rss+xml
+        FilterProvider  COMPRESS  DEFLATE resp=Content-Type $application/atom+xml
+        FilterProvider  COMPRESS  DEFLATE resp=Content-Type $application/vnd.ms-fontobject
+        FilterProvider  COMPRESS  DEFLATE resp=Content-Type $image/svg+xml
+        FilterProvider  COMPRESS  DEFLATE resp=Content-Type $image/x-icon
+        FilterProvider  COMPRESS  DEFLATE resp=Content-Type $application/x-font-ttf
+        FilterProvider  COMPRESS  DEFLATE resp=Content-Type $font/truetype
+        FilterProvider  COMPRESS  DEFLATE resp=Content-Type $font/opentype
+        FilterProvider  COMPRESS  DEFLATE resp=Content-Type $application/x-font-woff
+        FilterProvider  COMPRESS  DEFLATE resp=Content-Type $application/font-woff
+        FilterChain     COMPRESS
+        FilterProtocol  COMPRESS  DEFLATE change=yes;byteranges=no
+    </IfModule>
+    
+    # Fallback untuk Apache versi lama
+    <IfModule !mod_filter.c>
+        AddOutputFilterByType DEFLATE text/html text/plain text/css application/json
+        AddOutputFilterByType DEFLATE application/javascript
+        AddOutputFilterByType DEFLATE text/xml application/xml text/x-component
+        AddOutputFilterByType DEFLATE application/xhtml+xml application/rss+xml application/atom+xml
+        AddOutputFilterByType DEFLATE image/svg+xml image/x-icon application/vnd.ms-fontobject application/x-font-ttf font/opentype
+    </IfModule>
+</IfModule>
+
+# ----------------------------------------------------------------------
+# 4. BROWSER CACHING (PERFORMA)
+# Menyimpan aset statis di browser pengguna agar tidak didownload berulang kali
+# ----------------------------------------------------------------------
+<IfModule mod_expires.c>
+    ExpiresActive on
+    ExpiresDefault                          "access plus 1 month"
+
+    # CSS & JavaScript
+    ExpiresByType text/css                  "access plus 1 year"
+    ExpiresByType application/javascript    "access plus 1 year"
+    ExpiresByType text/javascript           "access plus 1 year"
+
+    # Images
+    ExpiresByType image/jpg                 "access plus 1 year"
+    ExpiresByType image/jpeg                "access plus 1 year"
+    ExpiresByType image/gif                 "access plus 1 year"
+    ExpiresByType image/png                 "access plus 1 year"
+    ExpiresByType image/webp                "access plus 1 year"
+    ExpiresByType image/svg+xml             "access plus 1 year"
+    ExpiresByType image/x-icon              "access plus 1 year"
+
+    # Fonts
+    ExpiresByType application/font-woff     "access plus 1 month"
+    ExpiresByType application/font-woff2    "access plus 1 month"
+    ExpiresByType application/x-font-ttf    "access plus 1 month"
+    ExpiresByType font/opentype             "access plus 1 month"
+
+    # Data
+    ExpiresByType application/json          "access plus 0 seconds"
+    ExpiresByType application/xml           "access plus 0 seconds"
+    ExpiresByType text/xml                  "access plus 0 seconds"
+    ExpiresByType text/html                 "access plus 0 seconds"
+</IfModule>

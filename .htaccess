@@ -1,0 +1,10 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Aturan 1: Arahkan akses root (kosong) ke folder public/
+    RewriteRule ^$ public/ [L]
+
+    # Aturan 2: Arahkan semua request lainnya ke folder public/
+    # (kecuali jika request tersebut sudah mengarah ke public)
+    RewriteRule (.*) public/$1 [L]
+</IfModule>
