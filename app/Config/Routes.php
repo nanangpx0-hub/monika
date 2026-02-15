@@ -32,5 +32,11 @@ $routes->group('', ['filter' => 'auth'], static function ($routes): void {
     });
     
     $routes->get('logistik', 'Logistik::index');
-    $routes->get('uji-petik', 'UjiPetik::index');
+    
+    $routes->group('uji-petik', static function ($routes): void {
+        $routes->get('/', 'UjiPetik::index');
+        $routes->get('new', 'UjiPetik::new');
+        $routes->post('store', 'UjiPetik::store', ['filter' => 'csrf']);
+        $routes->get('delete/(:num)', 'UjiPetik::delete/$1');
+    });
 });

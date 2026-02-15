@@ -45,19 +45,41 @@ class KartuKendaliModel extends Model
 
     /**
      * Get progress summary for all NKS
+     * Using subquery approach to avoid GROUP BY issues with only_full_group_by
      */
     public function getProgressByNks()
     {
+        $db = \Config\Database::connect();
+
+        // 1. Subquery: Hitung total dokumen fisik yang diterima (SUM)
+        // Dikelompokkan per NKS agar tidak error group by
+        $subQueryTerima = $db->table('tanda_terima')
+            ->select('nks, SUM(jml_ruta_terima) as total_fisik_masuk')
+            ->groupBy('nks')
+            ->getCompiledSelect();
+
+        // 2. Subquery: Hitung total yang sudah di-entry (Clean/Error)
+        $subQueryEntry = $db->table('kartu_kendali')
+            ->select('nks, COUNT(id) as total_entry_selesai')
+            ->whereIn('status_entry', ['Clean', 'Error'])
+            ->groupBy('nks')
+            ->getCompiledSelect();
+
+        // 3. Main Query: Join Master NKS dengan Subquery
         $builder = $this->db->table('nks_master');
-        $builder->select('nks_master.nks, nks_master.kecamatan, nks_master.desa, 
+        $builder->select('nks_master.nks, 
+                          nks_master.kecamatan, 
+                          nks_master.desa, 
                           nks_master.target_ruta,
-                          tanda_terima.jml_ruta_terima,
-                          COUNT(kartu_kendali.id) as jml_selesai');
-        $builder->join('tanda_terima', 'tanda_terima.nks = nks_master.nks', 'inner');
-        $builder->join('kartu_kendali', 'kartu_kendali.nks = nks_master.nks', 'left');
-        $builder->groupBy('nks_master.nks');
+                          COALESCE(terima.total_fisik_masuk, 0) as jml_terima,
+                          COALESCE(entry.total_entry_selesai, 0) as jml_selesai');
+
+        // Join Subquery (Alias 'terima' dan 'entry')
+        $builder->join("($subQueryTerima) as terima", 'terima.nks = nks_master.nks', 'left');
+        $builder->join("($subQueryEntry) as entry", 'entry.nks = nks_master.nks', 'left');
+
         $builder->orderBy('nks_master.nks', 'ASC');
-        
+
         return $builder->get()->getResultArray();
     }
 

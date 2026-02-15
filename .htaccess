@@ -1,18 +1,23 @@
+# Disable directory browsing
+Options -Indexes
+
 <IfModule mod_rewrite.c>
     RewriteEngine On
+    RewriteBase /monika/
 
-    # Normalisasi URL project agar konsisten ke lowercase /monika/
-    RewriteCond %{REQUEST_URI} ^/MONIKA(/.*)?$
-    RewriteRule ^ %{REQUEST_SCHEME}://%{HTTP_HOST}/monika%1 [R=302,L]
-
-    # Jangan rewrite lagi jika URI sudah mengarah ke folder public
-    RewriteRule ^public/ - [L]
-
-    # Lewati jika file/folder fisik di root memang ada
-    RewriteCond %{REQUEST_FILENAME} -f [OR]
-    RewriteCond %{REQUEST_FILENAME} -d
-    RewriteRule ^ - [L]
-
-    # Arahkan request aplikasi ke front controller di public/
-    RewriteRule ^(.*)$ public/$1 [L,QSA]
+    # If the request is for a file or directory that exists in root, serve it
+    # But we want to redirect everything to public folder
+    RewriteCond %{REQUEST_URI} !^/monika/public/
+    RewriteRule ^(.*)$ public/$1 [L]
 </IfModule>
+
+# Prevent access to hidden files
+<FilesMatch "^\.">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>

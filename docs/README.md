@@ -1,15 +1,32 @@
-# 📚 Dokumentasi Git Automation MONIKA
+# 📚 Dokumentasi MONIKA
 
 **Status**: ✅ Production Ready  
 **Last Updated**: Februari 15, 2026  
-**Version**: 1.0  
-**Maintained By**: DevOps & Development Team
+**Version**: 1.1  
+**Maintained By**: DevOps & Development Team MONIKA
+
+Index ini mencakup dokumentasi Git Automation dan modul aplikasi MONIKA.
 
 ---
 
 ## 🎯 Quick Navigation
 
 Pilih dokumentasi sesuai kebutuhan Anda:
+
+### 🧾 Saya Petugas Pengolahan (Kartu Kendali)
+
+```
+Tujuan: Menjalankan entry ruta per NKS
+
+Baca:
+1. [Panduan Pengguna Kartu Kendali](KARTU_KENDALI_USER_GUIDE.md)
+   - Alur kerja harian
+   - Arti status warna ruta
+   - Entry, edit, dan hapus data
+
+2. Untuk detail teknis:
+   → [Dokumentasi Modul Kartu Kendali](KARTU_KENDALI_MODULE.md)
+```
 
 ### 👨‍💻 Saya Developer MONIKA
 
@@ -108,6 +125,8 @@ Sections:
 | **GIT_AUTOMATION_GUIDE.md** | 🇬🇧 EN | 1-2 jam | Architect | Deep dive, complete reference |
 | **GIT_AUTOMATION_QUICKSTART.md** | 🇬🇧 EN | 5 menit | New User | Quick setup, basic usage |
 | **GIT_AUTOMATION_VALIDATION_REPORT.md** | 🇬🇧 EN | 15 menit | Tech Lead | Verification, test results |
+| **KARTU_KENDALI_USER_GUIDE.md** | 🇮🇩 ID | 10 menit | Petugas Pengolahan | Panduan penggunaan fitur Kartu Kendali |
+| **KARTU_KENDALI_MODULE.md** | 🇮🇩 ID | 10 menit | Developer | Deskripsi modul, route, API, dan testing |
 
 ---
 
@@ -503,8 +522,8 @@ Get-Content writable/logs/git-automation/git-automation-*.log -Tail 50
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.1 | Feb 15, 2026 | Add Kartu Kendali documentation index and user guide links |
 | 1.0 | Feb 15, 2026 | Initial release, all components tested |
-| — | — | — |
 
 ---
 
@@ -540,6 +559,9 @@ Sistem ini dirancang untuk:
 
 ## 🎯 Next Steps
 
+**For Pengolahan Team:**
+→ Start dengan [KARTU_KENDALI_USER_GUIDE.md](KARTU_KENDALI_USER_GUIDE.md)
+
 **For Developers:**
 → Start dengan [MONIKA_PANDUAN_GIT_AUTOMATION.md](MONIKA_PANDUAN_GIT_AUTOMATION.md)
 
@@ -564,4 +586,4 @@ Sistem ini dirancang untuk:
 🐛 **Found a bug?** Check troubleshooting or logs first.  
 💡 **Have suggestions?** Commit a documentation improvement!
 
-**Happy Git Automation! 🚀**
+**Happy Building with MONIKA!**
