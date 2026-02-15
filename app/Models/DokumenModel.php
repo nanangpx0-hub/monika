@@ -24,7 +24,7 @@ class DokumenModel extends Model
     // Validation
     protected $validationRules      = [
         'id_kegiatan' => 'required|integer',
-        'kode_wilayah' => 'required|min_length(3)|max_length(20)',
+        'kode_wilayah' => 'required|min_length[3]|max_length[20]',
         'id_petugas_pendataan' => 'required|integer',
         'tanggal_setor' => 'required|valid_date'
     ];

@@ -21,18 +21,6 @@ class UserModel extends Model
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
 
-    // Callbacks
-    protected $beforeInsert = ['hashPassword'];
-    protected $beforeUpdate = ['hashPassword'];
-
-    protected function hashPassword(array $data)
-    {
-        if (! isset($data['data']['password'])) {
-            return $data;
-        }
-
-        $data['data']['password'] = password_hash($data['data']['password'], PASSWORD_BCRYPT);
-
-        return $data;
-    }
+    // Note: Password hashing is handled explicitly in Auth controller.
+    // Do NOT add hashPassword callbacks here to avoid double-hashing risk.
 }

@@ -362,7 +362,7 @@ class Auth extends BaseController
             '',
             '/',
             '',
-            false,
+            ENVIRONMENT === 'production',
             true,
             'Lax'
         );
@@ -416,7 +416,7 @@ class Auth extends BaseController
     {
         $base = (string) env('auth.remember.key', '');
         if ($base === '') {
-            $base = (string) env('app.baseURL', config('App')->baseURL);
+            throw new Exception('auth.remember.key harus dikonfigurasi di .env untuk fitur Remember Me.');
         }
 
         return hash('sha256', $base . '|monika|remember', true);

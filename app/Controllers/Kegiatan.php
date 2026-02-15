@@ -2,7 +2,6 @@
 
 namespace App\Controllers;
 
-use App\Controllers\BaseController;
 use App\Models\KegiatanModel;
 
 class Kegiatan extends BaseController
@@ -32,6 +31,17 @@ class Kegiatan extends BaseController
     {
         if (session()->get('id_role') != 1) {
             return redirect()->to('/dashboard');
+        }
+
+        $rules = [
+            'nama_kegiatan'  => 'required|min_length[3]|max_length[100]',
+            'kode_kegiatan'  => 'required|min_length[3]|max_length[20]',
+            'tanggal_mulai'  => 'required|valid_date',
+            'tanggal_selesai' => 'required|valid_date',
+        ];
+
+        if (!$this->validate($rules)) {
+            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
         $data = [

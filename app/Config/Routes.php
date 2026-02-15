@@ -22,7 +22,7 @@ $routes->group('', ['filter' => 'auth'], static function ($routes): void {
         $routes->get('edit/(:num)', 'TandaTerima::edit/$1');
         $routes->post('create', 'TandaTerima::store', ['filter' => 'csrf']);
         $routes->post('update/(:num)', 'TandaTerima::update/$1', ['filter' => 'csrf']);
-        $routes->get('delete/(:num)', 'TandaTerima::delete/$1');
+        $routes->post('delete/(:num)', 'TandaTerima::delete/$1', ['filter' => 'csrf']);
     });
 
     $routes->get('presensi', 'Presensi::index');
@@ -49,7 +49,7 @@ $routes->group('', ['filter' => 'auth'], static function ($routes): void {
         $routes->get('/', 'Kegiatan::index');
         $routes->post('store', 'Kegiatan::store', ['filter' => 'csrf']);
         $routes->post('status/(:num)', 'Kegiatan::updateStatus/$1', ['filter' => 'csrf']);
-        $routes->get('delete/(:num)', 'Kegiatan::delete/$1');
+        $routes->post('delete/(:num)', 'Kegiatan::delete/$1', ['filter' => 'csrf']);
     });
 
     $routes->group('laporan', static function ($routes): void {
@@ -66,6 +66,6 @@ $routes->group('', ['filter' => 'auth'], static function ($routes): void {
         $routes->get('edit/(:num)', 'UjiPetik::edit/$1');
         $routes->post('store', 'UjiPetik::store', ['filter' => 'csrf']);
         $routes->post('update/(:num)', 'UjiPetik::update/$1', ['filter' => 'csrf']);
-        $routes->get('delete/(:num)', 'UjiPetik::delete/$1');
+        $routes->post('delete/(:num)', 'UjiPetik::delete/$1', ['filter' => 'csrf']);
     });
 });
