@@ -8,6 +8,10 @@ class CreateKartuKendaliTable extends Migration
 {
     public function up()
     {
+        if ($this->db->tableExists('kartu_kendali')) {
+            return;
+        }
+
         $this->forge->addField([
             'id' => [
                 'type'           => 'INT',
@@ -53,12 +57,24 @@ class CreateKartuKendaliTable extends Migration
         $this->forge->addKey('id', true);
         $this->forge->addUniqueKey(['nks', 'no_ruta']);
         
-        // Foreign Keys
-        $this->forge->addForeignKey('nks', 'nks_master', 'nks', 'CASCADE', 'CASCADE');
-        
+        // Foreign key nks hanya jika tabel referensi tersedia.
+        if ($this->db->tableExists('nks_master') && $this->db->fieldExists('nks', 'nks_master')) {
+            $this->forge->addForeignKey('nks', 'nks_master', 'nks', 'CASCADE', 'CASCADE');
+        }
+
         // Check if users table uses 'id' or 'id_user'
-        $userPk = $this->db->fieldExists('id_user', 'users') ? 'id_user' : 'id';
-        $this->forge->addForeignKey('user_id', 'users', $userPk, 'CASCADE', 'CASCADE');
+        $userPk = null;
+        if ($this->db->tableExists('users')) {
+            if ($this->db->fieldExists('id_user', 'users')) {
+                $userPk = 'id_user';
+            } elseif ($this->db->fieldExists('id', 'users')) {
+                $userPk = 'id';
+            }
+        }
+
+        if ($userPk !== null) {
+            $this->forge->addForeignKey('user_id', 'users', $userPk, 'CASCADE', 'CASCADE');
+        }
         
         $this->forge->createTable('kartu_kendali', true);
     }

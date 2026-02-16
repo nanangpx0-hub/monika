@@ -82,7 +82,7 @@ class Database extends Config
     //        'DSN'        => '',
     //        'hostname'   => 'localhost',
     //        'username'   => 'root',
-    //        'password'   => 'root',
+    //        'password'   => 'Monika@2026!',
     //        'database'   => 'ci4',
     //        'schema'     => 'public',
     //        'DBDriver'   => 'Postgre',
@@ -109,7 +109,7 @@ class Database extends Config
     //        'DSN'        => '',
     //        'hostname'   => 'localhost',
     //        'username'   => 'root',
-    //        'password'   => 'root',
+    //        'password'   => 'Monika@2026!',
     //        'database'   => 'ci4',
     //        'schema'     => 'dbo',
     //        'DBDriver'   => 'SQLSRV',
@@ -142,7 +142,7 @@ class Database extends Config
     //    public array $default = [
     //        'DSN'        => 'localhost:1521/XEPDB1',
     //        'username'   => 'root',
-    //        'password'   => 'root',
+    //        'password'   => 'Monika@2026!',
     //        'DBDriver'   => 'OCI8',
     //        'DBPrefix'   => '',
     //        'pConnect'   => false,
@@ -200,5 +200,14 @@ class Database extends Config
         if (ENVIRONMENT === 'testing') {
             $this->defaultGroup = 'tests';
         }
+
+        // Load database configuration from .env
+        $this->default['hostname'] = env('database.default.hostname', 'localhost');
+        $this->default['username'] = env('database.default.username', '');
+        $this->default['password'] = env('database.default.password', '');
+        $this->default['database'] = env('database.default.database', '');
+        $this->default['DBDriver'] = env('database.default.DBDriver', 'MySQLi');
+        $this->default['DBPrefix'] = env('database.default.DBPrefix', '');
+        $this->default['port']     = (int) env('database.default.port', 3306);
     }
 }

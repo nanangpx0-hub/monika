@@ -54,13 +54,13 @@ class KartuKendaliModel extends Model
         // 1. Subquery: Hitung total dokumen fisik yang diterima (SUM)
         // Dikelompokkan per NKS agar tidak error group by
         $subQueryTerima = $db->table('tanda_terima')
-            ->select('nks, SUM(jml_ruta_terima) as total_fisik_masuk')
+            ->select('nks COLLATE utf8mb4_general_ci AS nks, SUM(jml_ruta_terima) as total_fisik_masuk', false)
             ->groupBy('nks')
             ->getCompiledSelect();
 
         // 2. Subquery: Hitung total yang sudah di-entry (Clean/Error)
         $subQueryEntry = $db->table('kartu_kendali')
-            ->select('nks, COUNT(id) as total_entry_selesai')
+            ->select('nks COLLATE utf8mb4_general_ci AS nks, COUNT(id) as total_entry_selesai', false)
             ->whereIn('status_entry', ['Clean', 'Error'])
             ->groupBy('nks')
             ->getCompiledSelect();

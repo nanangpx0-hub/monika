@@ -46,13 +46,12 @@
 - `dokumen_survei` (Model: DokumenModel)
 - `kartu_kendali` (Model: KartuKendaliModel)
 - `master_kegiatan` (Model: KegiatanModel)
+- `login_attempts` (Model: LoginAttemptModel)
 - `logistik` (Model: LogistikModel)
 - `nks_master` (Model: NksModel)
 - `presensi` (Model: PresensiModel)
-- `roles` (Model: RoleModel)
 - `tanda_terima` (Model: TandaTerimaModel)
 - `uji_petik` (Model: UjiPetikModel)
-- `users` (Model: UserModel)
 
 ---
 

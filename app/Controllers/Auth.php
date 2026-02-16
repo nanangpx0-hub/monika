@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Models\LoginAttemptModel;
 use Config\Database;
 use Exception;
 
@@ -9,8 +10,16 @@ class Auth extends BaseController
 {
     private const REMEMBER_COOKIE = 'monika_remember';
     private const REMEMBER_DAYS = 30;
+    private const MAX_LOGIN_ATTEMPTS = 5;
+    private const LOCKOUT_TIME = 15; // minutes
 
     private array $userColumns = [];
+    private LoginAttemptModel $loginAttemptModel;
+
+    public function __construct()
+    {
+        $this->loginAttemptModel = new LoginAttemptModel();
+    }
 
     public function index()
     {
@@ -31,10 +40,35 @@ class Auth extends BaseController
 
     public function login()
     {
+        $ipAddress = $this->request->getIPAddress();
         $identity = trim((string) ($this->request->getPost('username') ?? $this->request->getPost('email') ?? ''));
         $password = (string) $this->request->getPost('password');
         $remember = (string) $this->request->getPost('remember_me');
 
+        // Check rate limiting
+        $failedAttemptsByIp = $this->loginAttemptModel->getFailedAttemptsCount($ipAddress, self::LOCKOUT_TIME);
+        $failedAttemptsByUsername = $identity !== ''
+            ? $this->loginAttemptModel->getFailedAttemptsCountByUsername($identity, self::LOCKOUT_TIME)
+            : 0;
+        $failedAttempts = max($failedAttemptsByIp, $failedAttemptsByUsername);
+
+        if ($failedAttempts >= self::MAX_LOGIN_ATTEMPTS) {
+            $this->logError('Rate limit exceeded', [
+                'ip' => $ipAddress,
+                'username' => $identity,
+                'attempts_ip' => $failedAttemptsByIp,
+                'attempts_username' => $failedAttemptsByUsername,
+            ]);
+
+            return $this->response
+                ->setStatusCode(429)
+                ->setJSON([
+                    'status' => 'error',
+                    'message' => 'Terlalu banyak percobaan login. Silakan coba lagi dalam ' . self::LOCKOUT_TIME . ' menit.',
+                ]);
+        }
+
+        // Validate input
         $validationData = [
             'username' => $identity,
             'password' => $password,
@@ -46,44 +80,141 @@ class Auth extends BaseController
         ];
 
         if (! $this->validateData($validationData, $validationRules)) {
+            $errorMsg = 'Username/Email dan password wajib diisi.';
+            $this->loginAttemptModel->logAttempt($ipAddress, $identity, false, $errorMsg);
+
             return $this->response
                 ->setStatusCode(422)
                 ->setJSON([
                     'status' => 'error',
-                    'message' => 'Username/Email dan password wajib diisi.',
+                    'message' => $errorMsg,
                     'errors' => $this->validator->getErrors(),
                 ]);
         }
 
+        // Check database connection
+        try {
+            $db = Database::connect();
+            if (! $db->connID) {
+                throw new Exception('Database connection failed');
+            }
+        } catch (Exception $e) {
+            $this->logError('Database connection error', [
+                'error' => $e->getMessage(),
+                'ip' => $ipAddress,
+            ]);
+
+            return $this->response
+                ->setStatusCode(500)
+                ->setJSON([
+                    'status' => 'error',
+                    'message' => 'Terjadi kesalahan sistem. Silakan hubungi administrator.',
+                ]);
+        }
+
+        // Find user
         $user = $this->findUserByIdentity($identity);
         if (! $user || ! isset($user['password']) || ! password_verify($password, (string) $user['password'])) {
+            $errorMsg = 'Username atau password salah.';
+            $this->loginAttemptModel->logAttempt($ipAddress, $identity, false, $errorMsg);
+
+            $this->logError('Invalid credentials', [
+                'ip' => $ipAddress,
+                'username' => $identity,
+                'user_found' => $user !== null,
+            ]);
+
             return $this->response
                 ->setStatusCode(401)
                 ->setJSON([
                     'status' => 'error',
-                    'message' => 'Password/Username salah',
+                    'message' => $errorMsg,
                 ]);
         }
 
+        // Check if account is active
         if ($this->hasUserColumn('is_active') && isset($user['is_active']) && (int) $user['is_active'] === 0) {
+            $errorMsg = 'Akun Anda tidak aktif. Silakan hubungi administrator.';
+            $this->loginAttemptModel->logAttempt($ipAddress, $identity, false, $errorMsg);
+
+            $this->logError('Inactive account', [
+                'ip' => $ipAddress,
+                'username' => $identity,
+                'user_id' => $this->extractUserId($user),
+            ]);
+
             return $this->response
                 ->setStatusCode(403)
                 ->setJSON([
                     'status' => 'error',
-                    'message' => 'Akun tidak aktif.',
+                    'message' => $errorMsg,
                 ]);
         }
 
-        $this->setSessionUser($user);
+        // Check session directory
+        if (! $this->ensureSessionDirectory()) {
+            $this->logError('Session directory not writable', [
+                'path' => WRITEPATH . 'session',
+            ]);
 
+            return $this->response
+                ->setStatusCode(500)
+                ->setJSON([
+                    'status' => 'error',
+                    'message' => 'Terjadi kesalahan sistem. Silakan hubungi administrator.',
+                ]);
+        }
+
+        // Set session
+        try {
+            $this->setSessionUser($user);
+
+            // Log successful login
+            $this->loginAttemptModel->logAttempt($ipAddress, $identity, true);
+
+            // Opportunistic housekeeping to keep login_attempts table compact.
+            if (random_int(1, 20) === 1) {
+                $this->loginAttemptModel->clearOldAttempts();
+            }
+
+            $this->logInfo('Login successful', [
+                'ip' => $ipAddress,
+                'username' => $identity,
+                'user_id' => $this->extractUserId($user),
+            ]);
+        } catch (Exception $e) {
+            $this->logError('Session creation failed', [
+                'error' => $e->getMessage(),
+                'ip' => $ipAddress,
+                'username' => $identity,
+            ]);
+
+            return $this->response
+                ->setStatusCode(500)
+                ->setJSON([
+                    'status' => 'error',
+                    'message' => 'Gagal membuat sesi login. Silakan coba lagi.',
+                ]);
+        }
+
+        // Handle remember me
         if (in_array(strtolower($remember), ['1', 'on', 'true', 'yes'], true)) {
-            $this->setRememberCookie((int) $this->extractUserId($user));
+            try {
+                $this->setRememberCookie((int) $this->extractUserId($user));
+            } catch (Exception $e) {
+                // Remember me failed, but login still successful
+                $this->logError('Remember me cookie failed', [
+                    'error' => $e->getMessage(),
+                    'user_id' => $this->extractUserId($user),
+                ]);
+            }
         } else {
             $this->clearRememberCookie();
         }
 
         return $this->response->setJSON([
             'status' => 'success',
+            'message' => 'Login berhasil.',
             'redirect' => base_url('dashboard'),
         ]);
     }
@@ -283,7 +414,7 @@ class Auth extends BaseController
         $roleValue = $this->extractRole($user);
         $namaValue = $this->extractName($user);
 
-        session()->regenerate(true);
+        // Set session data first, then regenerate
         session()->set([
             'id' => $userId,
             'id_user' => $userId,
@@ -294,6 +425,14 @@ class Auth extends BaseController
             'username' => $user['username'] ?? null,
             'is_logged_in' => true,
         ]);
+
+        // Regenerate session ID for security
+        session()->regenerate(false);
+
+        // Verify session was set correctly
+        if (! session()->get('is_logged_in')) {
+            throw new Exception('Session data not persisted');
+        }
     }
 
     private function findUserByIdentity(string $identity): ?array
@@ -440,7 +579,17 @@ class Auth extends BaseController
     private function hasUserColumn(string $column): bool
     {
         if ($this->userColumns === []) {
-            $this->userColumns = Database::connect()->getFieldNames('users');
+            $db = Database::connect();
+            $columns = $db->getFieldNames('users');
+
+            if ($columns === [] || $columns === false || $columns === null) {
+                $prefixedTable = $db->prefixTable('users');
+                if ($prefixedTable !== 'users') {
+                    $columns = $db->getFieldNames($prefixedTable);
+                }
+            }
+
+            $this->userColumns = is_array($columns) ? $columns : [];
         }
 
         return in_array($column, $this->userColumns, true);
@@ -454,5 +603,37 @@ class Auth extends BaseController
             '5' => 'pimpinan',
             default => 'operator_sosial',
         };
+    }
+
+    /**
+     * Ensure session directory exists and is writable
+     */
+    private function ensureSessionDirectory(): bool
+    {
+        $sessionPath = WRITEPATH . 'session';
+
+        if (! is_dir($sessionPath)) {
+            if (! mkdir($sessionPath, 0700, true)) {
+                return false;
+            }
+        }
+
+        return is_writable($sessionPath);
+    }
+
+    /**
+     * Log error message
+     */
+    private function logError(string $message, array $context = []): void
+    {
+        log_message('error', '[AUTH] ' . $message . ' | ' . json_encode($context));
+    }
+
+    /**
+     * Log info message
+     */
+    private function logInfo(string $message, array $context = []): void
+    {
+        log_message('info', '[AUTH] ' . $message . ' | ' . json_encode($context));
     }
 }

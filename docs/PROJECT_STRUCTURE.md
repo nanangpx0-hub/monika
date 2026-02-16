@@ -27,13 +27,13 @@ This document provides an overview of the MONIKA project structure and component
 - `DokumenModel.php` - Table: `dokumen_survei`
 - `KartuKendaliModel.php` - Table: `kartu_kendali`
 - `KegiatanModel.php` - Table: `master_kegiatan`
+- `LaporanModel.php` - Aggregation model for reporting
+- `LoginAttemptModel.php` - Table: `login_attempts`
 - `LogistikModel.php` - Table: `logistik`
 - `NksModel.php` - Table: `nks_master`
 - `PresensiModel.php` - Table: `presensi`
-- `RoleModel.php` - Table: `roles`
 - `TandaTerimaModel.php` - Table: `tanda_terima`
 - `UjiPetikModel.php` - Table: `uji_petik`
-- `UserModel.php` - Table: `users`
 
 ---
 

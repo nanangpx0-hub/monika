@@ -3,6 +3,7 @@
 namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
+use Throwable;
 
 class EnsureUsersAuthColumns extends Migration
 {
@@ -34,7 +35,31 @@ class EnsureUsersAuthColumns extends Migration
                     'constraint' => 50,
                     'null'       => true,
                 ],
+                'fullname' => [
+                    'type'       => 'VARCHAR',
+                    'constraint' => 100,
+                    'null'       => true,
+                ],
+                'nama' => [
+                    'type'       => 'VARCHAR',
+                    'constraint' => 100,
+                    'null'       => true,
+                ],
+                'id_role' => [
+                    'type'       => 'INT',
+                    'constraint' => 11,
+                    'null'       => true,
+                ],
+                'is_active' => [
+                    'type'       => 'TINYINT',
+                    'constraint' => 1,
+                    'default'    => 1,
+                ],
                 'created_at' => [
+                    'type' => 'DATETIME',
+                    'null' => true,
+                ],
+                'updated_at' => [
                     'type' => 'DATETIME',
                     'null' => true,
                 ],
@@ -48,50 +73,67 @@ class EnsureUsersAuthColumns extends Migration
             return;
         }
 
-        $existingColumns = $this->db->getFieldNames('users');
-        $addColumns = [];
-
-        if (! in_array('username', $existingColumns, true)) {
-            $addColumns['username'] = [
+        $requiredColumns = [
+            'username' => [
                 'type'       => 'VARCHAR',
                 'constraint' => 100,
                 'null'       => true,
-            ];
-        }
-
-        if (! in_array('email', $existingColumns, true)) {
-            $addColumns['email'] = [
+            ],
+            'email' => [
                 'type'       => 'VARCHAR',
                 'constraint' => 150,
                 'null'       => true,
-            ];
-        }
-
-        if (! in_array('password', $existingColumns, true)) {
-            $addColumns['password'] = [
+            ],
+            'password' => [
                 'type'       => 'VARCHAR',
                 'constraint' => 255,
                 'null'       => true,
-            ];
-        }
-
-        if (! in_array('role', $existingColumns, true)) {
-            $addColumns['role'] = [
+            ],
+            'role' => [
                 'type'       => 'VARCHAR',
                 'constraint' => 50,
                 'null'       => true,
-            ];
-        }
-
-        if (! in_array('created_at', $existingColumns, true)) {
-            $addColumns['created_at'] = [
+            ],
+            'fullname' => [
+                'type'       => 'VARCHAR',
+                'constraint' => 100,
+                'null'       => true,
+            ],
+            'nama' => [
+                'type'       => 'VARCHAR',
+                'constraint' => 100,
+                'null'       => true,
+            ],
+            'id_role' => [
+                'type'       => 'INT',
+                'constraint' => 11,
+                'null'       => true,
+            ],
+            'is_active' => [
+                'type'       => 'TINYINT',
+                'constraint' => 1,
+                'default'    => 1,
+            ],
+            'created_at' => [
                 'type' => 'DATETIME',
                 'null' => true,
-            ];
-        }
+            ],
+            'updated_at' => [
+                'type' => 'DATETIME',
+                'null' => true,
+            ],
+        ];
 
-        if ($addColumns !== []) {
-            $this->forge->addColumn('users', $addColumns);
+        foreach ($requiredColumns as $column => $definition) {
+            if ($this->db->fieldExists($column, 'users')) {
+                continue;
+            }
+
+            try {
+                $this->forge->addColumn('users', [$column => $definition]);
+            } catch (Throwable) {
+                // Ignore duplicate/unsupported alter errors to keep migration idempotent across drivers.
+            }
         }
     }
 

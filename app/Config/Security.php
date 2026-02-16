@@ -70,8 +70,10 @@ class Security extends BaseConfig
      * --------------------------------------------------------------------------
      *
      * Regenerate CSRF Token on every submission.
+     * 
+     * Set to false to prevent issues with AJAX requests
      */
-    public bool $regenerate = true;
+    public bool $regenerate = false;
 
     /**
      * --------------------------------------------------------------------------
@@ -80,7 +82,9 @@ class Security extends BaseConfig
      *
      * Redirect to previous page with error on failure.
      *
+     * Set to false for AJAX-based login to return JSON error instead of redirect
+     * 
      * @see https://codeigniter4.github.io/userguide/libraries/security.html#redirection-on-failure
      */
-    public bool $redirect = (ENVIRONMENT === 'production');
+    public bool $redirect = false;
 }

@@ -7,7 +7,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form action="/kegiatan/store" method="post">
+            <form action="<?= base_url('kegiatan/store') ?>" method="post">
                 <div class="modal-body">
                     <?= csrf_field() ?>
                     <div class="form-group">

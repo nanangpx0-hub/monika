@@ -15,7 +15,7 @@ class UserSeeder extends Seeder
         $columns = $this->db->getFieldNames('users');
         $has = static fn (string $name): bool => in_array($name, $columns, true);
 
-        $passwordHash = password_hash('123456', PASSWORD_BCRYPT);
+        $passwordHash = password_hash('Monika@2026!', PASSWORD_BCRYPT);
         $now = date('Y-m-d H:i:s');
 
         $data = [];

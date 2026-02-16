@@ -12,7 +12,7 @@ class AdminSeeder extends Seeder
             'fullname' => 'Administrator',
             'username' => 'admin',
             'email'    => 'admin@monika.test',
-            'password' => password_hash('admin123', PASSWORD_BCRYPT),
+            'password' => password_hash('Monika@2026!', PASSWORD_BCRYPT),
             'id_role'  => 1,
             'is_active' => 1
         ];

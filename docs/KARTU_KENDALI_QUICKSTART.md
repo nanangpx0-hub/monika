@@ -15,7 +15,7 @@ php spark db:seed KartuKendaliTestSeeder
 ### 3. Login ke Aplikasi
 - URL: `http://localhost/monika/`
 - Username: `admin`
-- Password: `admin123` (atau sesuai seeder Anda)
+- Password: `Monika@2026!`
 
 ### 4. Akses Modul
 - Klik menu **"Kartu Kendali"** di sidebar
@@ -70,7 +70,7 @@ Pastikan konfigurasi database di `.env`:
 database.default.hostname = localhost
 database.default.database = monika
 database.default.username = root
-database.default.password = 
+database.default.password = Monika@2026!
 database.default.DBDriver = MySQLi
 ```
 
@@ -266,4 +266,4 @@ Jika ingin berkontribusi:
 
 **Happy Coding! 🚀**
 
-*Last Updated: 15 Februari 2026*
+*Last Updated: 16 Februari 2026*

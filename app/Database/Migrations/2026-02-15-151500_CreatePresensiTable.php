@@ -8,6 +8,10 @@ class CreatePresensiTable extends Migration
 {
     public function up()
     {
+        if ($this->db->tableExists('presensi')) {
+            return;
+        }
+
         $userPk = null;
         if ($this->db->fieldExists('id_user', 'users')) {
             $userPk = 'id_user';
@@ -16,9 +20,13 @@ class CreatePresensiTable extends Migration
         }
 
         $isUserPkUnsigned = false;
-        if ($userPk !== null) {
-            $col = $this->db->query("SHOW COLUMNS FROM users LIKE '{$userPk}'")->getRowArray();
-            $isUserPkUnsigned = isset($col['Type']) && stripos((string) $col['Type'], 'unsigned') !== false;
+        if ($userPk !== null && $this->db->DBDriver === 'MySQLi') {
+            try {
+                $col = $this->db->query("SHOW COLUMNS FROM users LIKE '{$userPk}'")->getRowArray();
+                $isUserPkUnsigned = isset($col['Type']) && stripos((string) $col['Type'], 'unsigned') !== false;
+            } catch (\Throwable) {
+                $isUserPkUnsigned = false;
+            }
         }
 
         $this->forge->addField([
@@ -77,7 +85,7 @@ class CreatePresensiTable extends Migration
         $this->forge->addKey('id', true);
         $this->forge->addUniqueKey(['user_id', 'tgl']);
 
-        if ($userPk !== null) {
+        if ($userPk !== null && $this->db->tableExists('users')) {
             $this->forge->addForeignKey('user_id', 'users', $userPk, 'CASCADE', 'CASCADE');
         }
         $this->forge->createTable('presensi', true);

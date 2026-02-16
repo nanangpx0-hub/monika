@@ -1,162 +1,161 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title><?= $title ?? 'Setor Dokumen' ?></title>
+<?= $this->extend('layout/template'); ?>
 
-  <!-- Google Font: Source Sans Pro -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-  <!-- Theme style -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
-  <link rel="stylesheet" href="<?= base_url('assets/css/monika-ui.css'); ?>">
-</head>
-<body class="hold-transition sidebar-mini">
-<div class="wrapper">
+<?= $this->section('content'); ?>
 
-  <!-- Navbar -->
-  <nav class="main-header navbar navbar-expand navbar-white navbar-light">
-    <!-- Left navbar links -->
-    <ul class="navbar-nav">
-      <li class="nav-item">
-        <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
-      </li>
-    </ul>
-    
-    <ul class="navbar-nav ml-auto">
-      <li class="nav-item">
-        <a class="nav-link monika-logout-link" href="<?= base_url('logout'); ?>" role="button" aria-label="Logout">
-          <i class="fas fa-sign-out-alt"></i> <span class="logout-text">Logout</span>
-        </a>
-      </li>
-    </ul>
-  </nav>
+<div class="row mb-2">
+    <div class="col-sm-6">
+        <h1 class="m-0">Setor Dokumen</h1>
+    </div>
+    <div class="col-sm-6">
+        <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="<?= base_url('dokumen') ?>">Dokumen</a></li>
+            <li class="breadcrumb-item active">Setor</li>
+        </ol>
+    </div>
+</div>
 
-  <a class="monika-logout-fab" href="<?= base_url('logout'); ?>" role="button" aria-label="Logout cepat">
-    <i class="fas fa-sign-out-alt"></i>
-    <span class="logout-text">Logout</span>
-  </a>
-
-  <!-- Main Sidebar -->
-  <aside class="main-sidebar sidebar-dark-primary elevation-4">
-    <a href="/dashboard" class="brand-link">
-      <span class="brand-text font-weight-light">MONIKA System</span>
-    </a>
-
-    <div class="sidebar">
-      <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-        <div class="info">
-          <a href="#" class="d-block"><?= session()->get('fullname') ?></a>
-        </div>
-      </div>
-
-      <nav class="mt-2">
-        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-          <li class="nav-item">
-            <a href="/dashboard" class="nav-link">
-              <i class="nav-icon fas fa-tachometer-alt"></i>
-              <p>Dashboard</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="/dokumen" class="nav-link active">
-              <i class="nav-icon fas fa-file-alt"></i>
-              <p>Dokumen Survei</p>
-            </a>
-          </li>
+<?php if (session()->getFlashdata('errors')): ?>
+    <div class="alert alert-danger alert-dismissible fade show">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <ul class="mb-0">
+        <?php foreach (session()->getFlashdata('errors') as $e): ?>
+            <li><?= esc($e) ?></li>
+        <?php endforeach; ?>
         </ul>
-      </nav>
     </div>
-  </aside>
+<?php endif; ?>
 
-  <!-- Content Wrapper -->
-  <div class="content-wrapper">
-    <div class="content-header">
-      <div class="container-fluid">
-        <div class="row mb-2">
-          <div class="col-sm-6">
-            <h1 class="m-0">Setor Dokumen</h1>
-          </div>
-          <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="/dokumen">Dokumen</a></li>
-              <li class="breadcrumb-item active">Setor</li>
-            </ol>
-          </div>
-        </div>
-      </div>
-    </div>
+<div class="row">
+    <div class="col-md-6">
+        <div class="card card-primary">
+            <div class="card-header">
+                <h3 class="card-title"><i class="fas fa-file-upload mr-1"></i>Form Penyetoran Dokumen</h3>
+            </div>
 
-    <!-- Main content -->
-    <div class="content">
-      <div class="container-fluid">
-        <div class="row">
-          <div class="col-md-6">
-            <div class="card card-primary">
-              <div class="card-header">
-                <h3 class="card-title">Form Penyetoran Dokumen</h3>
-              </div>
-              
-              <form action="/dokumen/store" method="post">
+            <form action="<?= base_url('dokumen/store') ?>" method="post">
                 <?= csrf_field() ?>
                 <div class="card-body">
-                  <?php if(session()->getFlashdata('errors')): ?>
-                    <div class="alert alert-danger">
-                        <ul>
-                        <?php foreach(session()->getFlashdata('errors') as $e): ?>
-                            <li><?= $e ?></li>
-                        <?php endforeach; ?>
-                        </ul>
+                    <div class="form-group">
+                        <label>Kegiatan Survei <span class="text-danger">*</span></label>
+                        <select name="id_kegiatan" class="form-control" required>
+                            <option value="">-- Pilih Kegiatan Aktif --</option>
+                            <?php foreach ($kegiatan as $k): ?>
+                                <option value="<?= $k['id_kegiatan'] ?>"><?= esc($k['nama_kegiatan']) ?></option>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
-                  <?php endif; ?>
 
-                  <div class="form-group">
-                    <label>Kegiatan Survei</label>
-                    <select name="id_kegiatan" class="form-control" required>
-                        <option value="">-- Pilih Kegiatan Aktif --</option>
-                        <?php foreach($kegiatan as $k): ?>
-                            <option value="<?= $k['id_kegiatan'] ?>"><?= $k['nama_kegiatan'] ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                  </div>
+                    <div class="form-group">
+                        <label>Kode Wilayah (NBS/ID SLS) <span class="text-danger">*</span></label>
+                        <input type="text" name="kode_wilayah" class="form-control" placeholder="Contoh: 3509120001" required>
+                        <small class="text-muted">Masukkan Kode Wilayah unik dari dokumen.</small>
+                    </div>
 
-                  <div class="form-group">
-                    <label>Kode Wilayah (NBS/ID SLS)</label>
-                    <input type="text" name="kode_wilayah" class="form-control" placeholder="Contoh: 3509120001" required>
-                    <small>Masukkan Kode Wilayah unik dari dokumen.</small>
-                  </div>
-
-                  <div class="form-group">
-                    <label>Tanggal Setor</label>
-                    <input type="date" name="tanggal_setor" class="form-control" value="<?= date('Y-m-d') ?>" required>
-                  </div>
+                    <div class="form-group">
+                        <label>Tanggal Setor <span class="text-danger">*</span></label>
+                        <input type="date" name="tanggal_setor" class="form-control" value="<?= date('Y-m-d') ?>" required>
+                    </div>
                 </div>
 
                 <div class="card-footer">
-                  <button type="submit" class="btn btn-primary">Simpan</button>
-                  <a href="/dokumen" class="btn btn-default float-right">Batal</a>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save mr-1"></i>Simpan</button>
+                    <button type="button" class="btn btn-success ml-2" data-toggle="modal" data-target="#modal-import">
+                        <i class="fas fa-file-excel mr-1"></i>Impor dari Excel
+                    </button>
+                    <a href="<?= base_url('dokumen') ?>" class="btn btn-default float-right">Batal</a>
                 </div>
-              </form>
-            </div>
-          </div>
+            </form>
         </div>
-      </div>
     </div>
-  </div>
-
-  <footer class="main-footer">
-    <div class="float-right d-none d-sm-inline">Beta Version</div>
-    <strong>Copyright &copy; 2026 <a href="#">MONIKA</a>.</strong> All rights reserved.
-  </footer>
 </div>
 
-<!-- jQuery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<!-- Bootstrap 4 -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
-<!-- AdminLTE App -->
-<script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
-</body>
-</html>
+<!-- Import Modal -->
+<?= $this->include('dokumen/modal_import'); ?>
+
+<?= $this->endSection(); ?>
+
+<?= $this->section('scripts'); ?>
+<script>
+$(function () {
+    var previewData = [];
+
+    // Download Template
+    $('#btn-download-template').on('click', function () {
+        window.location.href = '<?= base_url('dokumen/download-template') ?>';
+    });
+
+    // Upload & Preview
+    $('#btn-upload-preview').on('click', function () {
+        var fileInput = $('#import_excel_file')[0];
+        var idKegiatan = $('#import_id_kegiatan').val();
+        var tanggalSetor = $('#import_tanggal_setor').val();
+
+        if (!idKegiatan) { alert('Pilih Kegiatan terlebih dahulu.'); return; }
+        if (!tanggalSetor) { alert('Pilih Tanggal Setor terlebih dahulu.'); return; }
+        if (!fileInput.files.length) { alert('Pilih file Excel (.xlsx) terlebih dahulu.'); return; }
+
+        var formData = new FormData();
+        formData.append('excel_file', fileInput.files[0]);
+        formData.append('<?= csrf_token() ?>', '<?= csrf_hash() ?>');
+
+        $('#import-status').html('<i class="fas fa-spinner fa-spin mr-1"></i>Memproses file...').show();
+        $('#import-preview-area').hide();
+        $('#btn-confirm-import').hide();
+
+        $.ajax({
+            url: '<?= base_url('dokumen/import-preview') ?>',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            dataType: 'json',
+            success: function (res) {
+                if (!res.success) {
+                    $('#import-status').html('<i class="fas fa-exclamation-circle text-danger mr-1"></i>' + res.message);
+                    return;
+                }
+
+                previewData = res.data;
+                var html = '';
+                $.each(res.data, function (i, row) {
+                    var cls = row.error ? 'table-danger' : '';
+                    html += '<tr class="' + cls + '">';
+                    html += '<td>' + (i + 1) + '</td>';
+                    html += '<td>' + $('<span>').text(row.kode_wilayah).html() + '</td>';
+                    html += '<td>' + (row.error ? '<span class="text-danger"><i class="fas fa-times-circle mr-1"></i>' + $('<span>').text(row.error).html() + '</span>' : '<span class="text-success"><i class="fas fa-check-circle"></i> OK</span>') + '</td>';
+                    html += '</tr>';
+                });
+                $('#import-preview-body').html(html);
+                $('#import-status').html(
+                    '<i class="fas fa-info-circle text-info mr-1"></i>Total: <b>' + res.total + '</b> baris | ' +
+                    '<span class="text-success"><b>' + res.valid + '</b> valid</span> | ' +
+                    '<span class="text-danger"><b>' + res.errors + '</b> error</span>'
+                );
+                $('#import-preview-area').show();
+
+                if (res.valid > 0) {
+                    $('#btn-confirm-import').show();
+                }
+            },
+            error: function () {
+                $('#import-status').html('<i class="fas fa-exclamation-circle text-danger mr-1"></i>Gagal mengunggah file. Coba lagi.');
+            }
+        });
+    });
+
+    // Confirm Import
+    $('#btn-confirm-import').on('click', function () {
+        // Collect only valid kode_wilayah
+        var validCodes = [];
+        $.each(previewData, function (i, row) {
+            if (!row.error) validCodes.push(row.kode_wilayah);
+        });
+
+        if (validCodes.length === 0) { alert('Tidak ada data valid untuk diimpor.'); return; }
+
+        $('#import_kode_wilayah_list').val(JSON.stringify(validCodes));
+        $('#form-import-confirm').submit();
+    });
+});
+</script>
+<?= $this->endSection(); ?>

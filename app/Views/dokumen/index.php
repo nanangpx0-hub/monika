@@ -9,6 +9,9 @@
     <div class="col-sm-6">
         <div class="float-sm-right">
             <?php if (in_array((int) $role_id, [1, 3], true)): ?>
+                <button type="button" class="btn btn-success mr-1" data-toggle="modal" data-target="#modal-import">
+                    <i class="fas fa-file-excel"></i> Impor Excel
+                </button>
                 <a href="<?= base_url('dokumen/create') ?>" class="btn btn-primary">
                     <i class="fas fa-plus"></i> Setor Dokumen
                 </a>
@@ -99,6 +102,7 @@
 </div>
 
 <?= $this->include('dokumen/modal_error'); ?>
+<?= $this->include('dokumen/modal_import'); ?>
 
 <?= $this->endSection(); ?>
 

@@ -5,193 +5,333 @@ namespace App\Database\Seeds;
 use CodeIgniter\Database\Seeder;
 use CodeIgniter\I18n\Time;
 
+/**
+ * User Dummy Seeder for MONIKA Application
+ * 
+ * Inserts 10 dummy users with default password Monika@2026!
+ * Password hashed with bcrypt cost factor 12
+ * 
+ * @author System Operator
+ * @date 2026-02-16
+ */
 class UserDummySeeder extends Seeder
 {
+    /**
+     * Default password for all users
+     */
+    private const DEFAULT_PASSWORD = 'Monika@2026!';
+    
+    /**
+     * Bcrypt cost factor
+     */
+    private const BCRYPT_COST = 12;
+
+    /**
+     * Run the seeder
+     */
     public function run()
     {
+        $startTime = microtime(true);
+        $logFile = WRITEPATH . 'logs/user_seeder_' . date('Y-m-d_His') . '.log';
+        $logContent = "=== USER DUMMY SEEDER LOG ===\n";
+        $logContent .= "Date: " . date('Y-m-d H:i:s') . "\n";
+        $logContent .= "Operator: System\n";
+        $logContent .= "================================\n\n";
+
+        // Check if table exists
         if (! $this->db->tableExists('users')) {
+            $logContent .= "[ERROR] Tabel users tidak ditemukan.\n";
+            $this->writeLog($logFile, $logContent);
             echo "[GAGAL] Tabel users tidak ditemukan.\n";
             return;
         }
 
+        // Get table columns
         $columns = $this->db->getFieldNames('users');
         $has = static fn (string $name): bool => in_array($name, $columns, true);
 
-        $allowedRoles = [];
-        if ($has('role')) {
-            $roleColumn = $this->db->query("SHOW COLUMNS FROM users LIKE 'role'")->getRowArray();
-            $roleType = strtolower((string) ($roleColumn['Type'] ?? ''));
-            if (str_starts_with($roleType, 'enum(')) {
-                preg_match_all("/'([^']+)'/", $roleType, $matches);
-                $allowedRoles = $matches[1] ?? [];
+        // Log available columns
+        $logContent .= "Kolom tersedia: " . implode(', ', $columns) . "\n\n";
+
+        // Check required columns
+        $requiredColumns = ['username', 'email', 'password'];
+        foreach ($requiredColumns as $col) {
+            if (! $has($col)) {
+                $logContent .= "[ERROR] Kolom wajib '{$col}' tidak ditemukan.\n";
+                $this->writeLog($logFile, $logContent);
+                echo "[GAGAL] Kolom wajib '{$col}' tidak ditemukan.\n";
+                return;
             }
         }
 
-        $data = [
+        // Backup table before insertion
+        $backupTable = 'users_backup_' . date('Ymd_His');
+        try {
+            $this->db->query("CREATE TABLE {$backupTable} AS SELECT * FROM users");
+            $logContent .= "[BACKUP] Tabel backup dibuat: {$backupTable}\n";
+            echo "[BACKUP] Tabel backup dibuat: {$backupTable}\n";
+        } catch (\Exception $e) {
+            $logContent .= "[WARNING] Gagal membuat backup: " . $e->getMessage() . "\n";
+            echo "[WARNING] Gagal membuat backup: " . $e->getMessage() . "\n";
+        }
+
+        // Count existing users before insertion
+        $countBefore = $this->db->table('users')->countAllResults();
+        $logContent .= "Jumlah user sebelum insert: {$countBefore}\n\n";
+
+        // Generate password hash with bcrypt cost 12
+        $passwordHash = password_hash(self::DEFAULT_PASSWORD, PASSWORD_BCRYPT, ['cost' => self::BCRYPT_COST]);
+        $logContent .= "Password hash generated (bcrypt cost " . self::BCRYPT_COST . ")\n";
+        $logContent .= "Hash: {$passwordHash}\n\n";
+
+        // User data sesuai dokumentasi AKUN_PENGGUNA.md
+        // Role mapping berdasarkan tabel roles yang ada:
+        // 1 = Administrator
+        // 3 = Petugas Pendataan (PCL)
+        // 4 = Petugas Pengolahan
+        // 5 = Pengawas Lapangan (PML)
+        // 6 = Pengawas Pengolahan
+        $users = [
             [
+                'nama_lengkap' => 'Nanang Pamungkas',
                 'username' => 'admin_nanang',
                 'email' => 'nanang.pamungkas@bps.go.id',
-                'password' => 'Monika@2026!',
-                'role' => 'admin',
-                'nama' => 'Nanang Pamungkas',
-                'status_aktif' => 1,
-                'created_at' => Time::now()->toDateTimeString(),
-                'updated_at' => Time::now()->toDateTimeString(),
-                'last_login' => Time::parse('2026-02-14 08:10:00')->toDateTimeString(),
+                'id_role' => 1, // Administrator
+                'status' => 'Aktif',
             ],
             [
+                'nama_lengkap' => 'Muhamad Suharsa',
                 'username' => 'admin_suharsa',
                 'email' => 'muhamad.suharsa@bps.go.id',
-                'password' => 'DataBPS#2026',
-                'role' => 'admin',
-                'nama' => 'Muhamad Suharsa',
-                'status_aktif' => 1,
-                'created_at' => Time::now()->toDateTimeString(),
-                'updated_at' => Time::now()->toDateTimeString(),
-                'last_login' => Time::parse('2026-02-13 09:00:00')->toDateTimeString(),
+                'id_role' => 1, // Administrator
+                'status' => 'Aktif',
             ],
             [
+                'nama_lengkap' => 'Qudrat Jufrian',
                 'username' => 'mod_qudrat',
                 'email' => 'qudrat.jufrian@bps.go.id',
-                'password' => 'Qudrat!2026',
-                'role' => 'moderator',
-                'nama' => 'Qudrat Jufrian',
-                'status_aktif' => 1,
-                'created_at' => Time::now()->toDateTimeString(),
-                'updated_at' => Time::now()->toDateTimeString(),
-                'last_login' => Time::parse('2026-02-12 07:35:00')->toDateTimeString(),
+                'id_role' => 6, // Pengawas Pengolahan (Moderator)
+                'status' => 'Aktif',
             ],
             [
+                'nama_lengkap' => 'Arumita Hertriesa',
                 'username' => 'mod_arumita',
                 'email' => 'arumita.hertriesa@bps.go.id',
-                'password' => 'Arumita$2026',
-                'role' => 'moderator',
-                'nama' => 'Arumita Hertriesa',
-                'status_aktif' => 1,
-                'created_at' => Time::now()->toDateTimeString(),
-                'updated_at' => Time::now()->toDateTimeString(),
-                'last_login' => null,
+                'id_role' => 6, // Pengawas Pengolahan (Moderator)
+                'status' => 'Aktif',
             ],
             [
+                'nama_lengkap' => 'Putri Salsabhila',
                 'username' => 'user_putri',
                 'email' => 'putrisalsabhilafahira10@gmail.com',
-                'password' => 'Putri@Salsa26',
-                'role' => 'user',
-                'nama' => 'Putri Salsabhila',
-                'status_aktif' => 1,
-                'created_at' => Time::now()->toDateTimeString(),
-                'updated_at' => Time::now()->toDateTimeString(),
-                'last_login' => Time::parse('2026-02-10 11:20:00')->toDateTimeString(),
+                'id_role' => 3, // Petugas Pendataan (PCL)
+                'status' => 'Aktif',
             ],
             [
+                'nama_lengkap' => 'Astri Widarianti',
                 'username' => 'user_astri',
                 'email' => 'a.widarianti@gmail.com',
-                'password' => 'Astri#Wid26',
-                'role' => 'user',
-                'nama' => 'Astri Widarianti',
-                'status_aktif' => 1,
-                'created_at' => Time::now()->toDateTimeString(),
-                'updated_at' => Time::now()->toDateTimeString(),
-                'last_login' => null,
+                'id_role' => 4, // Petugas Pengolahan
+                'status' => 'Aktif',
             ],
             [
+                'nama_lengkap' => 'Nur Ida Suryandari',
                 'username' => 'user_nurida',
                 'email' => 'nidasuryandari@gmail.com',
-                'password' => 'Nurida!Data26',
-                'role' => 'user',
-                'nama' => 'Nur Ida Suryandari',
-                'status_aktif' => 1,
-                'created_at' => Time::now()->toDateTimeString(),
-                'updated_at' => Time::now()->toDateTimeString(),
-                'last_login' => Time::parse('2026-01-30 15:05:00')->toDateTimeString(),
+                'id_role' => 4, // Petugas Pengolahan
+                'status' => 'Aktif',
             ],
             [
+                'nama_lengkap' => 'Gilang Risqi',
                 'username' => 'user_gilang',
                 'email' => 'gilangrizqi2001@gmail.com',
-                'password' => 'Gilang*Risqi26',
-                'role' => 'user',
-                'nama' => 'Gilang Risqi',
-                'status_aktif' => 1,
-                'created_at' => Time::now()->toDateTimeString(),
-                'updated_at' => Time::now()->toDateTimeString(),
-                'last_login' => Time::parse('2026-02-01 19:45:00')->toDateTimeString(),
+                'id_role' => 3, // Petugas Pendataan (PCL)
+                'status' => 'Aktif',
             ],
             [
+                'nama_lengkap' => 'Dimas Rafendra',
                 'username' => 'user_dimas',
                 'email' => 'rafendra.dimas09@gmail.com',
-                'password' => 'Dimas^Rafen26',
-                'role' => 'user',
-                'nama' => 'Dimas Rafendra',
-                'status_aktif' => 0,
-                'created_at' => Time::now()->toDateTimeString(),
-                'updated_at' => Time::now()->toDateTimeString(),
-                'last_login' => null,
+                'id_role' => 3, // Petugas Pendataan (PCL)
+                'status' => 'Non-Aktif',
             ],
             [
+                'nama_lengkap' => 'Zainal Gufron',
                 'username' => 'user_zainal',
                 'email' => 'muhammadzainalgufron11@gmail.com',
-                'password' => 'Zainal&Guf26',
-                'role' => 'user',
-                'nama' => 'Zainal Gufron',
-                'status_aktif' => 1,
-                'created_at' => Time::now()->toDateTimeString(),
-                'updated_at' => Time::now()->toDateTimeString(),
-                'last_login' => Time::parse('2026-02-14 20:20:00')->toDateTimeString(),
+                'id_role' => 4, // Petugas Pengolahan
+                'status' => 'Aktif',
             ],
         ];
 
-        foreach ($data as $user) {
+        $logContent .= "=== PROSES INSERT ===\n";
+        $inserted = 0;
+        $skipped = 0;
+        $failed = 0;
+
+        foreach ($users as $index => $user) {
+            $no = $index + 1;
+            $logContent .= "\n[{$no}] Processing: {$user['username']}\n";
+            
+            // Check for duplicate username
+            $existingUsername = $this->db->table('users')
+                ->where('username', $user['username'])
+                ->countAllResults();
+            
+            if ($existingUsername > 0) {
+                $logContent .= "    [SKIP] Username sudah ada: {$user['username']}\n";
+                echo "[SKIP] {$user['username']} - username sudah ada\n";
+                $skipped++;
+                continue;
+            }
+
+            // Check for duplicate email
+            $existingEmail = $this->db->table('users')
+                ->where('email', $user['email'])
+                ->countAllResults();
+            
+            if ($existingEmail > 0) {
+                $logContent .= "    [SKIP] Email sudah ada: {$user['email']}\n";
+                echo "[SKIP] {$user['username']} - email sudah ada\n";
+                $skipped++;
+                continue;
+            }
+
+            // Build insert data
             $insertData = [
                 'username' => $user['username'],
                 'email' => $user['email'],
-                'password' => password_hash($user['password'], PASSWORD_BCRYPT),
+                'password' => $passwordHash,
             ];
 
-            if ($has('nama')) {
-                $insertData['nama'] = $user['nama'];
+            // Add nama_lengkap if column exists
+            if ($has('nama_lengkap')) {
+                $insertData['nama_lengkap'] = $user['nama_lengkap'];
+            } elseif ($has('nama')) {
+                $insertData['nama'] = $user['nama_lengkap'];
+            } elseif ($has('fullname')) {
+                $insertData['fullname'] = $user['nama_lengkap'];
             }
 
-            if ($has('role')) {
-                if ($allowedRoles === [] || in_array($user['role'], $allowedRoles, true)) {
-                    $insertData['role'] = $user['role'];
-                } else {
-                    echo "[INFO] {$user['username']}: role '{$user['role']}' tidak sesuai ENUM tabel, dilewati.\n";
-                }
+            // Add id_role (required by foreign key)
+            if ($has('id_role')) {
+                $insertData['id_role'] = $user['id_role'];
             }
 
-            if ($has('status_aktif')) {
-                $insertData['status_aktif'] = $user['status_aktif'];
+            // Add status if column exists
+            if ($has('status')) {
+                $insertData['status'] = $user['status'];
+            } elseif ($has('status_aktif')) {
+                $insertData['status_aktif'] = ($user['status'] === 'Aktif') ? 1 : 0;
             } elseif ($has('is_active')) {
-                $insertData['is_active'] = $user['status_aktif'];
+                $insertData['is_active'] = ($user['status'] === 'Aktif') ? 1 : 0;
             }
 
+            // Add timestamps
+            $now = date('Y-m-d H:i:s');
             if ($has('created_at')) {
-                $insertData['created_at'] = $user['created_at'];
+                $insertData['created_at'] = $now;
             }
-
             if ($has('updated_at')) {
-                $insertData['updated_at'] = $user['updated_at'];
+                $insertData['updated_at'] = $now;
             }
 
-            if ($has('last_login')) {
-                $insertData['last_login'] = $user['last_login'];
+            // Insert
+            try {
+                $result = $this->db->table('users')->insert($insertData);
+                
+                if ($result) {
+                    $logContent .= "    [OK] Berhasil insert: {$user['username']} ({$user['email']})\n";
+                    $logContent .= "    Data: " . json_encode($insertData, JSON_UNESCAPED_UNICODE) . "\n";
+                    echo "[OK] {$user['username']} ({$user['email']}) berhasil diinsert.\n";
+                    $inserted++;
+                } else {
+                    $error = $this->db->error();
+                    $logContent .= "    [GAGAL] Database error: " . ($error['message'] ?? 'Unknown') . "\n";
+                    echo "[GAGAL] {$user['username']}: " . ($error['message'] ?? 'Unknown error') . "\n";
+                    $failed++;
+                }
+            } catch (\Exception $e) {
+                $logContent .= "    [GAGAL] Exception: " . $e->getMessage() . "\n";
+                echo "[GAGAL] {$user['username']}: " . $e->getMessage() . "\n";
+                $failed++;
             }
-
-            $result = $this->db->table('users')->ignore(true)->insert($insertData);
-
-            if (! $result) {
-                $error = $this->db->error();
-                $message = $error['message'] ?? 'Unknown database error';
-                echo "[GAGAL] {$user['username']} ({$user['email']}): {$message}\n";
-                continue;
-            }
-
-            if ($this->db->affectedRows() > 0) {
-                echo "[OK] {$user['username']} ({$user['email']}) berhasil diinsert.\n";
-                continue;
-            }
-
-            echo "[SKIP] {$user['username']} ({$user['email']}) dilewati (duplikat username/email).\n";
         }
+
+        // Count after insertion
+        $countAfter = $this->db->table('users')->countAllResults();
+        
+        // Validation
+        $logContent .= "\n=== VALIDASI ===\n";
+        $logContent .= "Jumlah user sebelum: {$countBefore}\n";
+        $logContent .= "Jumlah user sesudah: {$countAfter}\n";
+        $logContent .= "Selisih: " . ($countAfter - $countBefore) . " record\n";
+        $logContent .= "Inserted: {$inserted}\n";
+        $logContent .= "Skipped: {$skipped}\n";
+        $logContent .= "Failed: {$failed}\n";
+
+        // Check for duplicates
+        $duplicateCheck = $this->db->query("
+            SELECT username, COUNT(*) as cnt 
+            FROM users 
+            GROUP BY username 
+            HAVING COUNT(*) > 1
+        ")->getResultArray();
+        
+        if (empty($duplicateCheck)) {
+            $logContent .= "Duplikasi username: TIDAK ADA\n";
+        } else {
+            $logContent .= "Duplikasi username: DITEMUKAN\n";
+            foreach ($duplicateCheck as $dup) {
+                $logContent .= "  - {$dup['username']}: {$dup['cnt']} kali\n";
+            }
+        }
+
+        $duplicateEmail = $this->db->query("
+            SELECT email, COUNT(*) as cnt 
+            FROM users 
+            GROUP BY email 
+            HAVING COUNT(*) > 1
+        ")->getResultArray();
+        
+        if (empty($duplicateEmail)) {
+            $logContent .= "Duplikasi email: TIDAK ADA\n";
+        } else {
+            $logContent .= "Duplikasi email: DITEMUKAN\n";
+            foreach ($duplicateEmail as $dup) {
+                $logContent .= "  - {$dup['email']}: {$dup['cnt']} kali\n";
+            }
+        }
+
+        // Execution time
+        $endTime = microtime(true);
+        $executionTime = round($endTime - $startTime, 2);
+        $logContent .= "\n=== SUMMARY ===\n";
+        $logContent .= "Waktu eksekusi: {$executionTime} detik\n";
+        $logContent .= "Status: " . ($inserted === 10 ? 'SUKSES' : 'SELESAI DENGAN CATATAN') . "\n";
+        $logContent .= "Tanggal eksekusi: " . date('Y-m-d H:i:s') . "\n";
+        $logContent .= "Operator: System\n";
+
+        // Write log
+        $this->writeLog($logFile, $logContent);
+
+        echo "\n=== SUMMARY ===\n";
+        echo "Inserted: {$inserted}\n";
+        echo "Skipped: {$skipped}\n";
+        echo "Failed: {$failed}\n";
+        echo "Total users sekarang: {$countAfter}\n";
+        echo "Log file: {$logFile}\n";
+    }
+
+    /**
+     * Write log to file
+     */
+    private function writeLog(string $file, string $content): void
+    {
+        $dir = dirname($file);
+        if (! is_dir($dir)) {
+            mkdir($dir, 0755, true);
+        }
+        file_put_contents($file, $content);
     }
 }

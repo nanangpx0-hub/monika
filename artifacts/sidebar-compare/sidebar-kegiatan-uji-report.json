@@ -1,0 +1,141 @@
+{
+  "generatedAt": "2026-02-16T16:09:15.151Z",
+  "baseUrl": "http://localhost/monika",
+  "browsers": [
+    {
+      "browser": "chromium",
+      "viewports": [
+        {
+          "viewport": "desktop",
+          "size": {
+            "width": 1440,
+            "height": 900
+          },
+          "checks": {
+            "structureMatch": true,
+            "activeStateMatch": true,
+            "pushmenuToggleWorks": true,
+            "beforeToggleClass": "sidebar-mini layout-fixed",
+            "afterToggleClass": "sidebar-mini layout-fixed sidebar-collapse",
+            "ujiActive": [
+              "Uji Petik"
+            ],
+            "kegiatanActive": [
+              "Kegiatan"
+            ]
+          }
+        },
+        {
+          "viewport": "mobile",
+          "size": {
+            "width": 390,
+            "height": 844
+          },
+          "checks": {
+            "structureMatch": true,
+            "activeStateMatch": true,
+            "pushmenuToggleWorks": true,
+            "beforeToggleClass": "sidebar-mini layout-fixed sidebar-closed sidebar-collapse",
+            "afterToggleClass": "sidebar-mini layout-fixed sidebar-open",
+            "ujiActive": [
+              "Uji Petik"
+            ],
+            "kegiatanActive": [
+              "Kegiatan"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "browser": "firefox",
+      "viewports": [
+        {
+          "viewport": "desktop",
+          "size": {
+            "width": 1440,
+            "height": 900
+          },
+          "checks": {
+            "structureMatch": true,
+            "activeStateMatch": true,
+            "pushmenuToggleWorks": true,
+            "beforeToggleClass": "sidebar-mini layout-fixed",
+            "afterToggleClass": "sidebar-mini layout-fixed sidebar-collapse",
+            "ujiActive": [
+              "Uji Petik"
+            ],
+            "kegiatanActive": [
+              "Kegiatan"
+            ]
+          }
+        },
+        {
+          "viewport": "mobile",
+          "size": {
+            "width": 390,
+            "height": 844
+          },
+          "checks": {
+            "structureMatch": true,
+            "activeStateMatch": true,
+            "pushmenuToggleWorks": true,
+            "beforeToggleClass": "sidebar-mini layout-fixed sidebar-closed sidebar-collapse",
+            "afterToggleClass": "sidebar-mini layout-fixed sidebar-open",
+            "ujiActive": [
+              "Uji Petik"
+            ],
+            "kegiatanActive": [
+              "Kegiatan"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "browser": "webkit",
+      "viewports": [
+        {
+          "viewport": "desktop",
+          "size": {
+            "width": 1440,
+            "height": 900
+          },
+          "checks": {
+            "structureMatch": true,
+            "activeStateMatch": true,
+            "pushmenuToggleWorks": true,
+            "beforeToggleClass": "sidebar-mini layout-fixed",
+            "afterToggleClass": "sidebar-mini layout-fixed sidebar-collapse",
+            "ujiActive": [
+              "Uji Petik"
+            ],
+            "kegiatanActive": [
+              "Kegiatan"
+            ]
+          }
+        },
+        {
+          "viewport": "mobile",
+          "size": {
+            "width": 390,
+            "height": 844
+          },
+          "checks": {
+            "structureMatch": true,
+            "activeStateMatch": true,
+            "pushmenuToggleWorks": true,
+            "beforeToggleClass": "sidebar-mini layout-fixed sidebar-closed sidebar-collapse",
+            "afterToggleClass": "sidebar-mini layout-fixed sidebar-open",
+            "ujiActive": [
+              "Uji Petik"
+            ],
+            "kegiatanActive": [
+              "Kegiatan"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -46,12 +46,31 @@ final class AuthTest extends CIUnitTestCase
                 'constraint' => 50,
                 'null'       => true,
             ],
+            'id_role' => [
+                'type'       => 'INT',
+                'constraint' => 11,
+                'null'       => true,
+            ],
+            'is_active' => [
+                'type'       => 'TINYINT',
+                'constraint' => 1,
+                'default'    => 1,
+            ],
+            'fullname' => [
+                'type'       => 'VARCHAR',
+                'constraint' => 100,
+                'null'       => true,
+            ],
             'nama' => [
                 'type'       => 'VARCHAR',
                 'constraint' => 100,
                 'null'       => true,
             ],
             'created_at' => [
+                'type' => 'DATETIME',
+                'null' => true,
+            ],
+            'updated_at' => [
                 'type' => 'DATETIME',
                 'null' => true,
             ],
@@ -62,10 +81,14 @@ final class AuthTest extends CIUnitTestCase
         $db->table('users')->insert([
             'username' => 'admin',
             'email' => 'admin@monika.local',
-            'password' => password_hash('123456', PASSWORD_BCRYPT),
+            'password' => password_hash('Monika@2026!', PASSWORD_BCRYPT),
             'role' => 'super_admin',
+            'id_role' => 1,
+            'is_active' => 1,
+            'fullname' => 'Super Admin',
             'nama' => 'Super Admin',
             'created_at' => date('Y-m-d H:i:s'),
+            'updated_at' => date('Y-m-d H:i:s'),
         ]);
     }
 
@@ -75,7 +98,7 @@ final class AuthTest extends CIUnitTestCase
 
         $result = $this->post('/auth/login', [
             'username' => 'admin',
-            'password' => '123456',
+            'password' => 'Monika@2026!',
             $security->getTokenName() => $security->getHash(),
         ]);
 

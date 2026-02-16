@@ -120,7 +120,7 @@ CREATE TABLE `kartu_kendali` (
 
 -- 7. Seed admin user
 INSERT INTO `users` (`fullname`, `username`, `email`, `password`, `id_role`, `is_active`) VALUES
-('Administrator', 'admin', 'admin@monika.local', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 1, 1);
--- Password: password
+('Administrator', 'admin', 'admin@monika.local', '$2y$10$2NQx.WubMuShjmGCzJBd8OqJMME7kTCIPe2STz4uhoVQd1V7ZY/1q', 1, 1);
+-- Password: Monika@2026!
 
 SET FOREIGN_KEY_CHECKS = 1;

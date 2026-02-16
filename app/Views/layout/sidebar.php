@@ -51,6 +51,13 @@
                         <p>Dokumen</p>
                     </a>
                 </li>
+
+                <li class="nav-item">
+                    <a href="<?= base_url('penyetoran') ?>" class="nav-link <?= (strpos(uri_string(), 'penyetoran') !== false) ? 'active' : '' ?>">
+                        <i class="nav-icon fas fa-file-export"></i>
+                        <p>Penyetoran Dokumen</p>
+                    </a>
+                </li>
                 
                 <!-- MENU PENGOLAHAN -->
                 <li class="nav-header">PENGOLAHAN</li>
@@ -103,6 +110,13 @@
                     <a href="<?= base_url('monitoring') ?>" class="nav-link <?= (strpos(uri_string(), 'monitoring') !== false) ? 'active' : '' ?>">
                         <i class="nav-icon fas fa-chart-pie"></i>
                         <p>Monitoring</p>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="<?= base_url('users') ?>" class="nav-link <?= (strpos(uri_string(), 'users') !== false) ? 'active' : '' ?>">
+                        <i class="nav-icon fas fa-users-cog"></i>
+                        <p>Kelola Pengguna</p>
                     </a>
                 </li>
                 <?php endif; ?>

@@ -43,6 +43,19 @@ $routes->group('', ['filter' => 'auth'], static function ($routes): void {
         $routes->post('store', 'Dokumen::store', ['filter' => 'csrf']);
         $routes->post('mark-entry/(:num)', 'Dokumen::markEntry/$1', ['filter' => 'csrf']);
         $routes->post('report-error', 'Dokumen::reportError', ['filter' => 'csrf']);
+        $routes->get('download-template', 'Dokumen::downloadTemplate');
+        $routes->post('import-preview', 'Dokumen::importPreview', ['filter' => 'csrf']);
+        $routes->post('import-store', 'Dokumen::importStore', ['filter' => 'csrf']);
+    });
+
+    $routes->group('penyetoran', static function ($routes): void {
+        $routes->get('/', 'PenyetoranDokumen::index');
+        $routes->get('create', 'PenyetoranDokumen::create');
+        $routes->post('store', 'PenyetoranDokumen::store', ['filter' => 'csrf']);
+        $routes->get('detail/(:num)', 'PenyetoranDokumen::detail/$1');
+        $routes->post('confirm/(:num)', 'PenyetoranDokumen::confirm/$1', ['filter' => 'csrf']);
+        $routes->get('download-template', 'PenyetoranDokumen::downloadTemplate');
+        $routes->post('import-preview', 'PenyetoranDokumen::importPreview', ['filter' => 'csrf']);
     });
 
     $routes->group('kegiatan', static function ($routes): void {
@@ -53,12 +66,23 @@ $routes->group('', ['filter' => 'auth'], static function ($routes): void {
     });
 
     $routes->group('laporan', static function ($routes): void {
-        $routes->get('/', 'Laporan::pcl');
+        $routes->get('/', 'Laporan::index');
         $routes->get('pcl', 'Laporan::pcl');
         $routes->get('pengolahan', 'Laporan::pengolahan');
+        $routes->get('export-excel', 'Laporan::exportExcel');
+        $routes->get('export-pdf', 'Laporan::exportPdf');
     });
 
     $routes->get('monitoring', 'Monitoring::index');
+
+    $routes->group('users', static function ($routes): void {
+        $routes->get('/', 'UserManagement::index');
+        $routes->post('store', 'UserManagement::store', ['filter' => 'csrf']);
+        $routes->post('update/(:num)', 'UserManagement::update/$1', ['filter' => 'csrf']);
+        $routes->post('reset-password/(:num)', 'UserManagement::resetPassword/$1', ['filter' => 'csrf']);
+        $routes->post('toggle-active/(:num)', 'UserManagement::toggleActive/$1', ['filter' => 'csrf']);
+        $routes->post('delete/(:num)', 'UserManagement::delete/$1', ['filter' => 'csrf']);
+    });
     
     $routes->group('uji-petik', static function ($routes): void {
         $routes->get('/', 'UjiPetik::index');
